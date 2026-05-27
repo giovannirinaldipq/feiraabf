@@ -1885,6 +1885,20 @@ function showQuizResult() {
     answers: quizState.answers,
     params: sug.params
   });
+
+  // QR Code para o investidor escanear e levar o resultado no celular
+  try {
+    const qrWrap = document.getElementById("feira-qrcode");
+    if (qrWrap && typeof qrcode !== "undefined") {
+      qrWrap.innerHTML = "";
+      const name = encodeURIComponent((quizState.identity && quizState.identity.name) || "");
+      const url = location.origin + location.pathname + "?ref=feiraabf&nome=" + name;
+      const qr = qrcode(0, "M");
+      qr.addData(url);
+      qr.make();
+      qrWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4 });
+    }
+  } catch (e) { console.warn("[qr]", e); }
 }
 
 /* Monta mensagem rica de WhatsApp com dados do investidor + plano sugerido */

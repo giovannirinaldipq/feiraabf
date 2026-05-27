@@ -5131,3 +5131,48 @@ body.mkt-gate-open { overflow: hidden; }
 }
 .feira-wa-icon { font-size: 1.3rem; }
 .feira-wa-text { white-space: nowrap; }
+
+/* QR Code no resultado do quiz */
+.feira-qrcode-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 16px;
+  max-width: 220px;
+  margin: 0 auto;
+}
+.feira-qrcode-wrap svg {
+  width: 180px;
+  height: 180px;
+}
+
+/* ============================================================
+   TABLET TOUCH — áreas de toque maiores (min 48px)
+   ============================================================ */
+@media (pointer: coarse) {
+  .btn, .nav-group, .quiz-nav, .quiz-result-action,
+  .feira-splash-btn, .feira-whatsapp, .topbar-quiz {
+    min-height: 52px;
+    min-width: 52px;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .kpi {
+    padding: 1.5rem;
+  }
+  .nav-group {
+    padding: 0.6rem 1rem;
+  }
+  details.faq-item summary {
+    min-height: 52px;
+    padding: 1rem;
+  }
+  .hero-cta {
+    gap: 1rem;
+  }
+  .hero-cta .btn {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+  }
+}

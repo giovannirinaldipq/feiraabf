@@ -1724,6 +1724,15 @@
         <ul class="quiz-result-rationale" id="quiz-result-rationale"></ul>
       </section>
 
+      <section class="quiz-result-section qr-section-qrcode">
+        <header class="qr-section-head">
+          <span class="qr-section-num">05</span>
+          <h3 class="qr-section-title">Leve seu diagnóstico</h3>
+        </header>
+        <p class="qr-section-sub">Escaneie o QR Code abaixo para acessar este resultado no seu celular.</p>
+        <div class="feira-qrcode-wrap" id="feira-qrcode"></div>
+      </section>
+
       <footer class="quiz-result-foot">
         <button class="quiz-result-action quiz-result-whatsapp" id="quiz-whatsapp" type="button" hidden>
           <span class="qr-wa-icon" aria-hidden="true">💬</span>
@@ -1758,6 +1767,7 @@
     <span class="feira-wa-text">Falar com a AVEND</span>
   </a>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
   <script src="cities-data.js?v=32" defer></script>
   <script src="market-territory.js?v=33" defer></script>
   <script src="live-pulse.js?v=31" defer></script>
