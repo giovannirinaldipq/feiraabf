@@ -283,9 +283,6 @@ const TAB_GROUPS = {
     { id: "modelos",   label: "Modelos" },
     { id: "recebe",    label: "O que você recebe" },
     { id: "rede",      label: "Nossa Rede" }
-  ],
-  decidir: [
-    { id: "faq",       label: "Dúvidas" }
   ]
 };
 
@@ -3259,15 +3256,10 @@ document.addEventListener("DOMContentLoaded", () => {
   bindQuiz();
   bindVsl();
   bindMarketTerritory();
-  bindTour();
   bindReveals();
-  bindStickyCTA();
   applyTopbarGreeting();
   bindTopbarScroll();
   bindMagneticButtons();
-  bindCmdK();
-  maybeAutoOpenQuiz();
-  maybeAutoOpenTour();
   maybeShowAdmin();
   TELEMETRY.track("page_loaded", { url: location.href });
 
@@ -3299,3 +3291,20 @@ if (typeof window !== "undefined") {
     }
   } catch (e) { /* ignore */ }
 }
+
+/* ============================================================
+   FEIRA ABF — Splash screen
+   ============================================================ */
+(function () {
+  const splash = document.getElementById("feira-splash");
+  const btn = document.getElementById("feira-splash-start");
+  if (!splash || !btn) return;
+
+  document.body.style.overflow = "hidden";
+
+  btn.addEventListener("click", function () {
+    splash.classList.add("hidden");
+    document.body.style.overflow = "";
+    TELEMETRY.track("feira_splash_start", {});
+  });
+})();

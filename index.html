@@ -40,66 +40,26 @@
        ============================================================ */
     (function () {
       var KEY = "avend-access-v3";
-      var LEGACY = {
-        "avend2":        "geral",
-        "avend2-feira":  "feira",
-        "avend2-direto": "direto"
-      };
-
       function expose(ref) {
         window.AVEND_ACCESS_TOKEN = ref || "";
-        window.AVEND_ACCESS_LABEL = ref || "direto";
+        window.AVEND_ACCESS_LABEL = ref || "feiraabf";
       }
-
-      function sanitize(v) {
-        // só letras, dígitos e hífen — evita injection / dados sujos
-        return String(v || "").replace(/[^a-z0-9-]/gi, "").slice(0, 32).toLowerCase();
-      }
-
       try {
-        var params = new URLSearchParams(location.search || "");
-        var ref = sanitize(params.get("ref"));
-        var legacyK = params.get("k");
-
-        if (!ref && legacyK && Object.prototype.hasOwnProperty.call(LEGACY, legacyK)) {
-          ref = LEGACY[legacyK];
-        }
-
-        if (ref) {
-          try {
-            localStorage.setItem(KEY, JSON.stringify({
-              ref: ref, d: Date.now(), firstAccess: true
-            }));
-          } catch (e) { /* private mode pode bloquear */ }
-
-          // Limpa ?ref= e ?k= da URL — fica visualmente "produto", sem cara de campanha
-          try {
-            params.delete("ref");
-            params.delete("k");
-            var qs = params.toString();
-            var cleanUrl = location.pathname + (qs ? "?" + qs : "") + location.hash;
-            if (history.replaceState) history.replaceState({}, "", cleanUrl);
-          } catch (e) { /* ignore */ }
-
-          expose(ref);
-        } else {
-          var stored = null;
-          try { stored = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
-          expose(stored && stored.ref ? stored.ref : "");
-        }
-      } catch (e) {
-        expose("");
-      }
+        localStorage.setItem(KEY, JSON.stringify({
+          ref: "feiraabf", d: Date.now(), firstAccess: true
+        }));
+      } catch (e) {}
+      expose("feiraabf");
     })();
   </script>
 
-  <title>AVEND · Diagnóstico de Investidor em 2 minutos | Franquia de Vending Machines</title>
+  <title>AVEND · Feira ABF 2026 | Franquia de Vending Machines</title>
   <meta name="description" content="Descubra em 2 minutos quanto seu capital pode virar com vending machines AVEND. Simulador interativo com tributação real (MEI → Simples → LP), patrimônio e payback. Mais de 100 franqueados ativos no Brasil." />
   <meta name="author" content="AVEND Franchising" />
   <meta name="theme-color" content="#0d0e36" />
   <meta name="keywords" content="franquia vending machines, AVEND, simulador franquia, microfranquia, varejo automatizado, investimento renda passiva, BOM FRANQUEADO" />
 
-  <link rel="canonical" href="https://giovannirinaldipq.github.io/avend-businessplan/" />
+  <link rel="canonical" href="https://giovannirinaldipq.github.io/feiraabf/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <!-- Open Graph (WhatsApp, LinkedIn, Facebook) -->
@@ -107,13 +67,13 @@
   <meta property="og:site_name" content="AVEND · Vending Machines &amp; Franchising" />
   <meta property="og:title" content="Quanto sua 1ª máquina AVEND pode virar em 5 anos?" />
   <meta property="og:description" content="Diagnóstico personalizado em 2 minutos. Veja payback, lucro, patrimônio e tributação real (MEI → Simples → LP) sob medida pro seu perfil. +100 franqueados ativos · 14 estados." />
-  <meta property="og:image" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
-  <meta property="og:image:secure_url" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
+  <meta property="og:image" content="https://giovannirinaldipq.github.io/feiraabf/assets/og-image.png?v=2" />
+  <meta property="og:image:secure_url" content="https://giovannirinaldipq.github.io/feiraabf/assets/og-image.png?v=2" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="AVEND — Simulador interativo de franquia com diagnóstico personalizado" />
   <meta property="og:image:type" content="image/png" />
-  <meta property="og:url" content="https://giovannirinaldipq.github.io/avend-businessplan/" />
+  <meta property="og:url" content="https://giovannirinaldipq.github.io/feiraabf/" />
   <meta property="og:locale" content="pt_BR" />
 
   <!-- Twitter/X -->
@@ -121,7 +81,7 @@
   <meta name="twitter:site" content="@grupoavend" />
   <meta name="twitter:title" content="Quanto sua 1ª máquina AVEND pode virar em 5 anos?" />
   <meta name="twitter:description" content="Diagnóstico personalizado em 2 minutos. Payback, patrimônio e tributação real sob medida pro seu perfil." />
-  <meta name="twitter:image" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
+  <meta name="twitter:image" content="https://giovannirinaldipq.github.io/feiraabf/assets/og-image.png?v=2" />
   <meta name="twitter:image:alt" content="AVEND — Simulador interativo de franquia" />
 
   <!-- Favicon -->
@@ -145,14 +105,18 @@
     <span class="orb orb-3"></span>
   </div>
 
-  <!-- ==================== LOADER CINEMÁTICO ==================== -->
-  <div id="avend-loader" class="avend-loader" aria-hidden="true">
-    <div class="avend-loader-inner">
-      <div class="avend-loader-mark">AVEND</div>
-      <div class="avend-loader-tagline">Vending Machines &amp; Franchising</div>
-      <div class="avend-loader-bar"><span class="avend-loader-bar-fill"></span></div>
+  <!-- ==================== SPLASH FEIRA ABF ==================== -->
+  <div id="feira-splash" class="feira-splash">
+    <div class="feira-splash-inner">
+      <img class="feira-splash-logo" src="assets/logo-full.png" alt="AVEND" />
+      <h1 class="feira-splash-title">Feira ABF 2026</h1>
+      <p class="feira-splash-sub">Varejo Automatizado · Franquia de Vending Machines</p>
+      <button class="feira-splash-btn" id="feira-splash-start" type="button">
+        Iniciar Apresentação <span aria-hidden="true">→</span>
+      </button>
     </div>
   </div>
+
 
   <header class="topbar">
     <a class="brand" href="#" data-goto="overview" aria-label="AVEND — voltar ao Resumo">
@@ -176,11 +140,6 @@
         <span class="nav-group-step">03</span>
         <span class="nav-group-label">Operação</span>
       </button>
-      <span class="nav-group-arrow" aria-hidden="true">›</span>
-      <button class="nav-group" data-group="decidir" type="button">
-        <span class="nav-group-step">04</span>
-        <span class="nav-group-label">Decidir</span>
-      </button>
     </nav>
 
     <!-- Greeting personalizado: aparece se localStorage tem nome do user -->
@@ -203,14 +162,14 @@
     <section class="page active" id="overview">
       <div class="hero">
         <img class="hero-watermark" src="assets/logo-full.png" alt="" aria-hidden="true" />
-        <div class="hero-eyebrow">Franquia AVEND · Simulador Financeiro</div>
+        <div class="hero-eyebrow">Grupo AVEND · Feira ABF 2026</div>
         <h1 class="hero-title">
-          Sua <span class="grad-text">1ª máquina</span> é o início.<br />
-          Calcule até onde sua rede pode escalar.
+          Descubra seu <span class="grad-text">potencial</span><br />
+          como franqueado AVEND.
         </h1>
         <p class="hero-sub">
-          Ajuste faturamento, reinvestimento e capacidade — projete a expansão da sua operação
-          com <strong>tributação real</strong> (MEI → Simples → LP) e seus próprios parâmetros.
+          Simule seu investimento com <strong>tributação real</strong> (MEI → Simples → LP),
+          veja payback, patrimônio e expansão sob medida pro seu perfil.
         </p>
         <div class="hero-cta">
           <button class="btn btn-quiz" id="open-quiz-hero" type="button">
@@ -1655,326 +1614,18 @@
         </div>
       </div>
 
-      <!-- VÍDEOS -->
-      <div class="rede-block card">
-        <header class="rede-block-head">
-          <span class="rede-block-icon" aria-hidden="true">🎥</span>
-          <div>
-            <h3 class="card-title">Vídeos</h3>
-            <p class="rede-block-sub">Conteúdos da rede AVEND.</p>
-          </div>
-        </header>
 
-        <div class="video-grid">
-          <article class="video-card">
-            <div class="video-thumb">
-              <iframe
-                src="https://www.youtube.com/embed/SivxAPwhlj8"
-                title="Vídeo AVEND"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                loading="lazy"
-              ></iframe>
-              <span class="video-watermark" aria-hidden="true">
-                <img src="assets/logo-mark.webp" alt="" />
-              </span>
-            </div>
-          </article>
-          <article class="video-card video-card-short">
-            <div class="video-thumb">
-              <iframe
-                src="https://www.youtube.com/embed/wvIGN1OzPgU"
-                title="Vídeo AVEND"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                loading="lazy"
-              ></iframe>
-              <span class="video-watermark" aria-hidden="true">
-                <img src="assets/logo-mark.webp" alt="" />
-              </span>
-            </div>
-          </article>
-          <article class="video-card">
-            <div class="video-thumb">
-              <iframe
-                src="https://www.youtube.com/embed/RKWmnZphRnw"
-                title="Vídeo AVEND"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                loading="lazy"
-              ></iframe>
-              <span class="video-watermark" aria-hidden="true">
-                <img src="assets/logo-mark.webp" alt="" />
-              </span>
-            </div>
-          </article>
-          <article class="video-card video-card-short">
-            <div class="video-thumb">
-              <iframe
-                src="https://www.youtube.com/embed/uPd9p7FTU60"
-                title="Vídeo AVEND"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-                loading="lazy"
-              ></iframe>
-              <span class="video-watermark" aria-hidden="true">
-                <img src="assets/logo-mark.webp" alt="" />
-              </span>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <!-- AVEND NA MÍDIA -->
-      <div class="rede-block card midia-block">
-        <header class="rede-block-head">
-          <span class="rede-block-icon" aria-hidden="true">📰</span>
-          <div>
-            <h3 class="card-title">AVEND na Mídia</h3>
-            <p class="rede-block-sub">A AVEND foi destaque em alguns dos principais veículos de negócios e franquias do Brasil.</p>
-          </div>
-        </header>
-
-        <div class="midia-grid">
-          <a class="midia-card midia-card-hl" href="https://exame.com/negocios/jovem-fatura-r-20-mi-com-vending-machines-demorei-para-confiar-no-simples/" target="_blank" rel="noopener">
-            <span class="midia-pill midia-pill-hl">Destaque</span>
-            <span class="midia-veiculo">EXAME</span>
-            <span class="midia-titulo">“Jovem fatura R$ 20 mi com vending machines: ‘demorei para confiar no Simples’”</span>
-            <span class="midia-resumo">Trajetória da marca e seus resultados no mercado de vending machines.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://revistapegn.globo.com/franquias/noticia/2026/04/ele-transformou-uma-renda-extra-em-rede-de-franquias-de-vending-machines-que-fatura-r-20-milhoes.ghtml" target="_blank" rel="noopener">
-            <span class="midia-veiculo">PEGN · Globo</span>
-            <span class="midia-titulo">“Ele transformou uma renda extra em rede de franquias que fatura R$ 20 milhões”</span>
-            <span class="midia-resumo">Reportagem sobre franquias acessíveis e oportunidades para empreender em 2026.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://www.portaldofranchising.com.br/noticias/microfranquia-para-sair-da-clt/" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Portal do Franchising</span>
-            <span class="midia-titulo">Microfranquia para sair da CLT</span>
-            <span class="midia-resumo">Crescimento das microfranquias e alternativas para quem busca empreender.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://mapadasfranquias.com.br/noticia/empreendedorismo-acessivel-abre-caminho-para-sair-da-clt-com-modelos-de-baixo-investimento/" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Mapa das Franquias</span>
-            <span class="midia-titulo">Empreendedorismo acessível abre caminho para sair da CLT</span>
-            <span class="midia-resumo">Empreendedorismo acessível e franquias de baixo investimento.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://economiasa.com.br/blog/empreendedorismo-acessivel-abre-caminho-para-sair-da-clt-com-modelos-de-baixo-investimento/" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Economia S/A</span>
-            <span class="midia-titulo">A força do empreendedorismo acessível</span>
-            <span class="midia-resumo">A ascensão de modelos automatizados no franchising brasileiro.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://n4news.com.br/empreendedorismo-acessivel-amplia-alternativas-para-quem-busca-sair-da-clt/" target="_blank" rel="noopener">
-            <span class="midia-veiculo">N4 News</span>
-            <span class="midia-titulo">Microfranquias e independência financeira</span>
-            <span class="midia-resumo">Modelos enxutos e escaláveis para quem busca sair da CLT.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://afinamenina.com.br/2026/02/08/empreendedorismo-acessivel-como-microfranquias-e-varejo-automatizado-transformam-o-mercado/" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Afina Menina</span>
-            <span class="midia-titulo">Microfranquias e varejo automatizado transformam o mercado</span>
-            <span class="midia-resumo">Tendência crescente do setor de varejo automatizado.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://www.diariodaregiao.com.br/opiniao/artigos/revoluc-o-silenciosa-1.2059692" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Diário da Região</span>
-            <span class="midia-titulo">A revolução silenciosa das vending machines</span>
-            <span class="midia-resumo">Artigo sobre a transformação do varejo automatizado.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-
-          <a class="midia-card" href="https://www.diariodaregiao.com.br/economia/neg%C3%B3cios-em-pauta/empresa-rio-pretense-de-maquinas-de-vendas-projeta-crescimento-de-150-em-2025-1.2056722" target="_blank" rel="noopener">
-            <span class="midia-veiculo">Diário da Região</span>
-            <span class="midia-titulo">Empresa rio-pretense projeta crescimento de 150% em 2025</span>
-            <span class="midia-resumo">Projeção de crescimento da AVEND no mercado de máquinas de vendas.</span>
-            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
-          </a>
-        </div>
-      </div>
     </section>
 
-    <!-- DÚVIDAS / FAQ -->
-    <section class="page" id="faq">
-      <header class="page-head">
-        <h2 class="page-title">
-          Dúvidas frequentes
-        </h2>
-        <p class="page-sub">
-          Resposta direta às perguntas mais comuns de quem está avaliando a franquia AVEND.
-        </p>
-      </header>
+    <!-- DÚVIDAS / FAQ — removido para versão feira -->
 
-      <div class="faq-cat">
-        <h3 class="faq-cat-title">Sobre &amp; Investimento</h3>
-
-        <details class="faq-item">
-          <summary>O que é a AVEND e qual o diferencial da franquia?</summary>
-          <div class="faq-body">
-            <p>
-              A AVEND é uma rede de varejo automatizado focada na <strong>gestão inteligente de pontos
-              de venda</strong> através de vending machines. O diferencial não é apenas a máquina, mas
-              um modelo de negócio validado por <strong>mais de 10 anos de operação</strong>, com foco
-              em seleção estratégica de pontos, padronização de processos e suporte contínuo
-              para o franqueado.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Qual o investimento total para ter uma franquia AVEND?</summary>
-          <div class="faq-body">
-            <p>O investimento inicial para a 1ª unidade é de <strong>R$ 55.000,00</strong>:</p>
-            <ul>
-              <li>R$ 10.000,00 — Taxa de Franquia</li>
-              <li>R$ 45.000,00 — Vending Machine</li>
-            </ul>
-            <p>
-              Para máquinas adicionais, franqueados ativos podem acessar a modalidade de incentivo
-              <strong>BOM FRANQUEADO</strong>, com a Vending Machine a partir de
-              <strong>R$ 35.000,00</strong> (sem nova taxa de franquia).
-            </p>
-            <p class="faq-note">
-              Custos de transporte, estoque inicial e acessórios variam conforme localidade e podem
-              ser planejados separadamente.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Quais são os custos recorrentes da franquia?</summary>
-          <div class="faq-body">
-            <ul>
-              <li><strong>Royalties</strong> — 5% do faturamento bruto, com piso de
-                <strong>R$ 250,00</strong> quando o faturamento mensal for inferior a R$ 5.000</li>
-              <li><strong>FNP (Fundo Nacional de Propaganda)</strong> — R$ 100,00 por máquina/mês</li>
-              <li><strong>Software de telemetria/pagamento</strong> — ~R$ 95,00/mês, pago direto ao
-                fornecedor homologado</li>
-            </ul>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-cat">
-        <h3 class="faq-cat-title">Operação no dia a dia</h3>
-
-        <details class="faq-item">
-          <summary>A AVEND ajuda na escolha do ponto comercial?</summary>
-          <div class="faq-body">
-            <p>
-              Sim. Oferecemos orientação estratégica e ferramentas de geolocalização para auxiliar
-              na identificação de pontos com alto potencial. Contudo, <strong>a prospecção, negociação
-              e formalização da parceria com o estabelecimento são responsabilidades do franqueado</strong>,
-              com nosso suporte contínuo.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Preciso ter experiência no setor de vending machines?</summary>
-          <div class="faq-body">
-            <p>
-              Não. O programa de treinamento (~40h) e os manuais operacionais são projetados para
-              capacitar o franqueado em todos os aspectos do negócio, da gestão da máquina às
-              estratégias de vendas.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Qual o tempo de dedicação necessário?</summary>
-          <div class="faq-body">
-            <p>
-              O modelo permite gestão flexível — operação integral ou renda complementar.
-              <strong>Mas exige envolvimento ativo</strong> do franqueado na operação e administração
-              para garantir o sucesso e a otimização dos resultados.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Como funciona o suporte técnico e operacional?</summary>
-          <div class="faq-body">
-            <p>
-              Acesso a sistema de telemetria com monitoramento em tempo real e canal de suporte via
-              sistema para assistência técnica e operacional. Manuais e treinamentos cobrem a maior
-              parte das questões — você opera com autonomia.
-            </p>
-          </div>
-        </details>
-      </div>
-
-      <div class="faq-cat">
-        <h3 class="faq-cat-title">Crescimento, saída e riscos</h3>
-
-        <details class="faq-item">
-          <summary>Posso ter outras máquinas ou expandir minha operação?</summary>
-          <div class="faq-body">
-            <p>
-              Sim, o crescimento é incentivado. Você terá <strong>direito de preferência</strong> para
-              adquirir máquinas adicionais no mesmo estabelecimento onde já opera, com preço de rede
-              (modalidade <strong>BOM FRANQUEADO</strong>, sem nova taxa de franquia).
-            </p>
-            <p>
-              Para novas unidades em outros locais, novo contrato de franquia e taxa de franquia são
-              necessários, sujeitos à aprovação da franqueadora.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>O que acontece se eu quiser vender minha franquia?</summary>
-          <div class="faq-body">
-            <p>
-              A transferência da unidade é possível mediante <strong>aprovação do novo franqueado pela
-              AVEND</strong> e pagamento de taxa de transferência (equivalente a 1× taxa de franquia
-              vigente). Em caso de rescisão antecipada, há multas contratuais aplicáveis previstas
-              na COF.
-            </p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>A AVEND garante algum faturamento ou lucro?</summary>
-          <div class="faq-body">
-            <p>
-              <strong>Não.</strong> Conforme a Lei de Franquias, não é possível garantir resultados
-              financeiros específicos. O sucesso do empreendimento está diretamente relacionado ao
-              seu esforço, dedicação e à escolha estratégica dos pontos, com o suporte e know-how
-              da AVEND.
-            </p>
-            <p class="faq-note">
-              Os números do simulador refletem médias observadas na rede em condições específicas
-              e servem como referência, não como promessa de resultado.
-            </p>
-          </div>
-        </details>
-      </div>
-    </section>
 
   </main>
 
   <footer class="footer">
     <div class="footer-row">
-      <span>© 2026 AVEND Franchising · Business Plan Interativo</span>
-      <span class="footer-ver">v1.0 · Cenário oficial do Deck</span>
+      <span>© 2026 AVEND Franchising · Feira ABF 2026</span>
+      <span class="footer-ver">Simulador Interativo</span>
     </div>
     <div class="footer-legal">
       As projeções deste simulador são <strong>ilustrativas</strong> e baseadas em médias da rede AVEND.
@@ -1996,12 +1647,9 @@
           <img src="assets/logo-mark.webp" alt="" class="quiz-brand-icon" />
           <div>
             <span class="quiz-brand-name">AVEND</span>
-            <span class="quiz-brand-tag">Diagnóstico Personalizado · obrigatório</span>
+            <span class="quiz-brand-tag">Diagnóstico Personalizado</span>
           </div>
         </div>
-        <span class="quiz-required-badge" aria-hidden="true" title="Necessário pra acessar o conteúdo">
-          🔒 Obrigatório
-        </span>
       </header>
 
       <div class="quiz-progress">
@@ -2101,56 +1749,14 @@
     </div>
   </div>
 
-  <!-- ==================== ⌘K PALETTE ==================== -->
-  <div id="cmdk-overlay" class="cmdk-overlay" hidden aria-hidden="true">
-    <div class="cmdk-modal" role="dialog" aria-modal="true" aria-labelledby="cmdk-title">
-      <div class="cmdk-input-wrap">
-        <span class="cmdk-input-icon" aria-hidden="true">⌘</span>
-        <input type="text" id="cmdk-input" class="cmdk-input"
-               placeholder="O que você quer fazer? (digite ou navegue ↑↓)"
-               autocomplete="off" spellcheck="false"
-               aria-label="Buscar comando" />
-        <button type="button" id="cmdk-close" class="cmdk-close" aria-label="Fechar">esc</button>
-      </div>
-      <ul id="cmdk-list" class="cmdk-list" role="listbox" aria-label="Comandos"></ul>
-      <div class="cmdk-foot">
-        <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
-        <span><kbd>↵</kbd> executar</span>
-        <span><kbd>esc</kbd> fechar</span>
-      </div>
-    </div>
-  </div>
 
-  <!-- ==================== STICKY CTA mobile ==================== -->
-  <button type="button" class="sticky-cta" id="sticky-cta" aria-label="Abrir diagnóstico personalizado">
-    <span aria-hidden="true">🎯</span>
-    <span>Diagnóstico Personalizado · 2 min</span>
-    <span aria-hidden="true">→</span>
-  </button>
 
-  <!-- ==================== TOUR GUIADO (60s, primeira visita) ==================== -->
-  <div id="tour-overlay" class="tour-overlay" hidden aria-hidden="true">
-    <div class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title">
-      <button type="button" class="tour-close" id="tour-close" aria-label="Fechar tour">&times;</button>
-      <div class="tour-progress">
-        <span class="tour-progress-bar" id="tour-progress-bar"></span>
-      </div>
-      <div class="tour-step-meta">
-        <span class="tour-step-num" id="tour-step-num">1</span>
-        <span class="tour-step-total">de <strong id="tour-step-total">5</strong></span>
-        <span class="tour-step-time" id="tour-step-time">⏱ ~60s no total</span>
-      </div>
-      <div class="tour-icon" id="tour-icon" aria-hidden="true">👋</div>
-      <h2 class="tour-title" id="tour-title">Bem-vindo ao plano AVEND</h2>
-      <p class="tour-body" id="tour-body">Em 60 segundos, vou te mostrar o que tem aqui dentro.</p>
-      <div class="tour-actions">
-        <button type="button" class="tour-btn tour-btn-skip" id="tour-skip">Pular</button>
-        <button type="button" class="tour-btn tour-btn-next" id="tour-next">
-          <span id="tour-next-label">Começar</span> <span aria-hidden="true">→</span>
-        </button>
-      </div>
-    </div>
-  </div>
+
+  <!-- ==================== BOTÃO WHATSAPP FIXO ==================== -->
+  <a class="feira-whatsapp" id="feira-whatsapp" href="https://wa.me/5517991134416?text=Ol%C3%A1%2C%20vim%20da%20Feira%20ABF%20e%20quero%20saber%20mais%20sobre%20a%20franquia%20AVEND" target="_blank" rel="noopener" aria-label="Falar com a AVEND pelo WhatsApp">
+    <span class="feira-wa-icon">💬</span>
+    <span class="feira-wa-text">Falar com a AVEND</span>
+  </a>
 
   <script src="cities-data.js?v=32" defer></script>
   <script src="market-territory.js?v=33" defer></script>

@@ -5030,8 +5030,104 @@ body.mkt-gate-open { overflow: hidden; }
    ============================================================ */
 [hidden] { display: none !important; }
 .quiz-overlay[hidden],
-.quiz-result-overlay[hidden],
-.cmdk-overlay[hidden],
-.tour-overlay[hidden] {
+.quiz-result-overlay[hidden] {
   display: none !important;
 }
+
+/* ============================================================
+   FEIRA ABF 2026 — Splash + WhatsApp fixo
+   ============================================================ */
+.feira-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-0);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.feira-splash.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.feira-splash-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+.feira-splash-logo {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 0 40px rgba(0, 229, 208, 0.3));
+}
+.feira-splash-title {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+.feira-splash-sub {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+.feira-splash-btn {
+  margin-top: 1rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-family: "Satoshi", system-ui, sans-serif;
+  color: var(--bg-0);
+  background: var(--grad-primary);
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 56px;
+  touch-action: manipulation;
+}
+.feira-splash-btn:hover,
+.feira-splash-btn:active {
+  transform: scale(1.04);
+  box-shadow: 0 8px 32px rgba(0, 229, 208, 0.3);
+}
+
+/* WhatsApp fixo */
+.feira-whatsapp {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  background: #25D366;
+  color: #fff;
+  font-family: "Satoshi", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 48px;
+  touch-action: manipulation;
+}
+.feira-whatsapp:hover,
+.feira-whatsapp:active {
+  transform: scale(1.05);
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
+}
+.feira-wa-icon { font-size: 1.3rem; }
+.feira-wa-text { white-space: nowrap; }
