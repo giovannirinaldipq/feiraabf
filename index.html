@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================================================
+       AVEND ACCESS GATE — bloqueia o site se não houver token válido.
+       Roda ANTES de qualquer outro asset (inline, no topo do head)
+       pra evitar flash de conteúdo. window.stop() cancela carregamento
+       pendente quando o gate barra.
+
+       COMO USAR:
+       • Mandar link com ?k=TOKEN → 1ª visita salva no localStorage,
+         próximas visitas dispensam o ?k=
+       • Adicionar/revogar tokens: editar VALID_TOKENS abaixo
+       • Invalidar TODOS de uma vez: bumpar KEY (v1 → v2 → ...) —
+         todo localStorage com versão antiga vira inválido
+       ============================================================ -->
+  <script>
+    /* ============================================================
+       ATRIBUIÇÃO DE TRÁFEGO (substitui o antigo "access gate").
+
+       Esse bloco NÃO é gate de segurança — é só captura da origem
+       do visitante pra telemetria (sabe de onde o lead chegou).
+       O site é público; qualquer um acessa com ou sem parâmetro.
+
+       Formato preferido (UTM-like, não desperta suspeita):
+         simulador.grupoavend.com.br/?ref=pedro
+         simulador.grupoavend.com.br/?ref=feira
+         simulador.grupoavend.com.br/?ref=linkedin
+
+       Compatibilidade: ?k=avend2 / ?k=avend2-feira / ?k=avend2-direto
+       (links já distribuídos no WhatsApp/materiais antigos) continuam
+       funcionando — mapeados pra ref="geral" / "feira" / "direto".
+
+       Persistência: salva em localStorage pra que próximas visitas
+       do mesmo navegador mantenham a atribuição. URL é limpa pro
+       investidor não ver os params nas visitas subsequentes.
+       ============================================================ */
+    (function () {
+      var KEY = "avend-access-v3";
+      var LEGACY = {
+        "avend2":        "geral",
+        "avend2-feira":  "feira",
+        "avend2-direto": "direto"
+      };
+
+      function expose(ref) {
+        window.AVEND_ACCESS_TOKEN = ref || "";
+        window.AVEND_ACCESS_LABEL = ref || "direto";
+      }
+
+      function sanitize(v) {
+        // só letras, dígitos e hífen — evita injection / dados sujos
+        return String(v || "").replace(/[^a-z0-9-]/gi, "").slice(0, 32).toLowerCase();
+      }
+
+      try {
+        var params = new URLSearchParams(location.search || "");
+        var ref = sanitize(params.get("ref"));
+        var legacyK = params.get("k");
+
+        if (!ref && legacyK && Object.prototype.hasOwnProperty.call(LEGACY, legacyK)) {
+          ref = LEGACY[legacyK];
+        }
+
+        if (ref) {
+          try {
+            localStorage.setItem(KEY, JSON.stringify({
+              ref: ref, d: Date.now(), firstAccess: true
+            }));
+          } catch (e) { /* private mode pode bloquear */ }
+
+          // Limpa ?ref= e ?k= da URL — fica visualmente "produto", sem cara de campanha
+          try {
+            params.delete("ref");
+            params.delete("k");
+            var qs = params.toString();
+            var cleanUrl = location.pathname + (qs ? "?" + qs : "") + location.hash;
+            if (history.replaceState) history.replaceState({}, "", cleanUrl);
+          } catch (e) { /* ignore */ }
+
+          expose(ref);
+        } else {
+          var stored = null;
+          try { stored = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+          expose(stored && stored.ref ? stored.ref : "");
+        }
+      } catch (e) {
+        expose("");
+      }
+    })();
+  </script>
+
+  <title>AVEND · Diagnóstico de Investidor em 2 minutos | Franquia de Vending Machines</title>
+  <meta name="description" content="Descubra em 2 minutos quanto seu capital pode virar com vending machines AVEND. Simulador interativo com tributação real (MEI → Simples → LP), patrimônio e payback. Mais de 100 franqueados ativos no Brasil." />
+  <meta name="author" content="AVEND Franchising" />
+  <meta name="theme-color" content="#0d0e36" />
+  <meta name="keywords" content="franquia vending machines, AVEND, simulador franquia, microfranquia, varejo automatizado, investimento renda passiva, BOM FRANQUEADO" />
+
+  <link rel="canonical" href="https://giovannirinaldipq.github.io/avend-businessplan/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <!-- Open Graph (WhatsApp, LinkedIn, Facebook) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AVEND · Vending Machines &amp; Franchising" />
+  <meta property="og:title" content="Quanto sua 1ª máquina AVEND pode virar em 5 anos?" />
+  <meta property="og:description" content="Diagnóstico personalizado em 2 minutos. Veja payback, lucro, patrimônio e tributação real (MEI → Simples → LP) sob medida pro seu perfil. +100 franqueados ativos · 14 estados." />
+  <meta property="og:image" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
+  <meta property="og:image:secure_url" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AVEND — Simulador interativo de franquia com diagnóstico personalizado" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:url" content="https://giovannirinaldipq.github.io/avend-businessplan/" />
+  <meta property="og:locale" content="pt_BR" />
+
+  <!-- Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@grupoavend" />
+  <meta name="twitter:title" content="Quanto sua 1ª máquina AVEND pode virar em 5 anos?" />
+  <meta name="twitter:description" content="Diagnóstico personalizado em 2 minutos. Payback, patrimônio e tributação real sob medida pro seu perfil." />
+  <meta name="twitter:image" content="https://giovannirinaldipq.github.io/avend-businessplan/assets/og-image.png?v=2" />
+  <meta name="twitter:image:alt" content="AVEND — Simulador interativo de franquia" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/webp" href="assets/logo-mark.webp" />
+  <link rel="apple-touch-icon" href="assets/logo-full.png" />
+
+  <!-- Premium Fonts: Clash Display (display) + Satoshi (body) -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css?v=37" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+          integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
+          crossorigin="anonymous"
+          defer></script>
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
+  <!-- ==================== LOADER CINEMÁTICO ==================== -->
+  <div id="avend-loader" class="avend-loader" aria-hidden="true">
+    <div class="avend-loader-inner">
+      <div class="avend-loader-mark">AVEND</div>
+      <div class="avend-loader-tagline">Vending Machines &amp; Franchising</div>
+      <div class="avend-loader-bar"><span class="avend-loader-bar-fill"></span></div>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#" data-goto="overview" aria-label="AVEND — voltar ao Resumo">
+      <img class="brand-logo" src="assets/logo-full.png" alt="AVEND" />
+      <span class="brand-title">AVEND</span>
+    </a>
+
+
+    <nav class="nav-main" role="tablist" aria-label="Jornada de avaliação">
+      <button class="nav-group active" data-group="visao" type="button">
+        <span class="nav-group-step">01</span>
+        <span class="nav-group-label">Visão</span>
+      </button>
+      <span class="nav-group-arrow" aria-hidden="true">›</span>
+      <button class="nav-group" data-group="numeros" type="button">
+        <span class="nav-group-step">02</span>
+        <span class="nav-group-label">Números</span>
+      </button>
+      <span class="nav-group-arrow" aria-hidden="true">›</span>
+      <button class="nav-group" data-group="operacao" type="button">
+        <span class="nav-group-step">03</span>
+        <span class="nav-group-label">Operação</span>
+      </button>
+      <span class="nav-group-arrow" aria-hidden="true">›</span>
+      <button class="nav-group" data-group="decidir" type="button">
+        <span class="nav-group-step">04</span>
+        <span class="nav-group-label">Decidir</span>
+      </button>
+    </nav>
+
+    <!-- Greeting personalizado: aparece se localStorage tem nome do user -->
+    <div class="topbar-greeting" id="topbar-greeting" hidden>
+      <span class="topbar-greeting-prefix" id="topbar-greeting-prefix">Olá,</span>
+      <strong class="topbar-greeting-name" id="topbar-greeting-name">—</strong>
+    </div>
+
+    <button class="topbar-quiz" id="open-quiz-header" type="button" aria-label="Abrir diagnóstico personalizado">
+      <span class="topbar-quiz-icon" aria-hidden="true">🎯</span>
+      <span class="topbar-quiz-text">Diagnóstico</span>
+    </button>
+  </header>
+
+  <!-- Sub-navegação: pills do grupo ativo, preenchidas via JS -->
+  <nav class="nav-sub" id="nav-sub" role="tablist" aria-label="Seções do grupo"></nav>
+
+  <main class="stage">
+    <!-- ==================== OVERVIEW ==================== -->
+    <section class="page active" id="overview">
+      <div class="hero">
+        <img class="hero-watermark" src="assets/logo-full.png" alt="" aria-hidden="true" />
+        <div class="hero-eyebrow">Franquia AVEND · Simulador Financeiro</div>
+        <h1 class="hero-title">
+          Sua <span class="grad-text">1ª máquina</span> é o início.<br />
+          Calcule até onde sua rede pode escalar.
+        </h1>
+        <p class="hero-sub">
+          Ajuste faturamento, reinvestimento e capacidade — projete a expansão da sua operação
+          com <strong>tributação real</strong> (MEI → Simples → LP) e seus próprios parâmetros.
+        </p>
+        <div class="hero-cta">
+          <button class="btn btn-quiz" id="open-quiz-hero" type="button">
+            <span class="btn-quiz-icon" aria-hidden="true">🎯</span>
+            <span class="btn-quiz-text">
+              <span class="btn-quiz-title">Diagnóstico Personalizado</span>
+              <span class="btn-quiz-sub">10 perguntas · plano sob medida em 2 minutos</span>
+            </span>
+            <span class="btn-quiz-arrow" aria-hidden="true">→</span>
+          </button>
+          <button class="btn btn-primary" data-goto="simulador">Abrir Simulador</button>
+          <button class="btn btn-ghost" data-goto="modelos">Comparar Modelos</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" data-reveal-stagger>
+        <article class="kpi kpi-a">
+          <div class="kpi-icon">⏱</div>
+          <div class="kpi-label">Payback 1ª Máquina</div>
+          <div class="kpi-value" id="kpi-payback">—</div>
+          <div class="kpi-hint">Média da rede · cenário base</div>
+        </article>
+        <article class="kpi kpi-b">
+          <div class="kpi-icon">%</div>
+          <div class="kpi-label">Margem Líquida</div>
+          <div class="kpi-value" id="kpi-margem">—</div>
+          <div class="kpi-hint">Média da rede · sobre faturamento bruto</div>
+        </article>
+        <article class="kpi kpi-c">
+          <div class="kpi-icon">◎</div>
+          <div class="kpi-label">Máquinas no Horizonte</div>
+          <div class="kpi-value" id="kpi-maquinas">—</div>
+          <div class="kpi-hint" id="kpi-maq-hint">Projeção · após 5 anos</div>
+        </article>
+        <article class="kpi kpi-d">
+          <div class="kpi-icon">$</div>
+          <div class="kpi-label">Lucro Mensal Final</div>
+          <div class="kpi-value" id="kpi-lucro-final">—</div>
+          <div class="kpi-hint" id="kpi-lucro-hint">Projeção · mês 60 · operação madura</div>
+        </article>
+      </div>
+
+      <div class="legal-banner" role="note">
+        <span class="legal-banner-icon" aria-hidden="true">⚖️</span>
+        <div>
+          <strong>Projeções ilustrativas, não promessa de resultado.</strong>
+          Os números refletem <em>médias observadas na rede AVEND</em> em cenários específicos.
+          Cada operação varia conforme ponto, perfil do franqueado e execução.
+          Os termos vinculantes constam na <strong>Circular de Oferta de Franquia (COF)</strong>,
+          entregue antes da assinatura, conforme <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13966.htm" target="_blank" rel="noopener">Lei 13.966/2019</a>.
+        </div>
+      </div>
+
+      <div class="regime-hint" id="kpi-regime-hint">—</div>
+
+      <!-- ===== Unit Economics breakdown ===== -->
+      <div class="unit-econ card">
+        <div class="unit-econ-head">
+          <h3 class="card-title">Como cada real de faturamento vira lucro</h3>
+          <p class="card-sub">Decomposição do faturamento mensal médio por máquina no cenário atual</p>
+        </div>
+        <div class="unit-econ-bar" id="unit-econ-bar" aria-hidden="true"></div>
+        <div class="unit-econ-grid" id="unit-econ-grid">
+          <!-- preenchido via JS -->
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat">
+          <div class="stat-val" id="strip-invest">R$ 55.000</div>
+          <div class="stat-lbl">Investimento inicial · 1ª máquina + franquia</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="strip-capex">—</div>
+          <div class="stat-lbl">CAPEX por máquina adicional (tudo incluído)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="strip-lucro-cumul">—</div>
+          <div class="stat-lbl">Lucro líquido acumulado · horizonte total</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="strip-prolabore">—</div>
+          <div class="stat-lbl">Pró-labore acumulado · Fase 2 ativa</div>
+        </div>
+        <div class="stat stat-asset">
+          <div class="stat-val" id="strip-patrimonio">—</div>
+          <div class="stat-lbl">Patrimônio · cada máquina é ativo seu (R$ 28.500/máq)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== POR QUE AVEND? (VSL) ==================== -->
+    <section class="page" id="porque">
+      <div class="vsl-wrap">
+
+        <header class="vsl-head">
+          <span class="vsl-eyebrow">▶ Vídeo · 10 minutos · imperdível</span>
+          <h2 class="vsl-title">
+            Por que investir na AVEND?
+          </h2>
+          <p class="vsl-sub">
+            Antes de mergulhar nas planilhas, deixa nosso fundador te contar — em
+            <strong>10 minutos</strong> — o que torna a AVEND <strong>diferente
+            de qualquer outra opção</strong> no mercado de vending machines.
+          </p>
+          <p class="vsl-sub-emphasis">
+            Quem não assiste sai com dúvidas. Quem assiste, decide.
+          </p>
+        </header>
+
+        <!-- Player VSL: lazy-load no clique, com capa atrativa -->
+        <div class="vsl-player" id="vsl-player">
+          <div class="vsl-cover" id="vsl-cover" role="button" tabindex="0"
+               aria-label="Reproduzir vídeo: Por que investir na AVEND?">
+            <img class="vsl-cover-watermark" src="assets/logo-full.png" alt="" aria-hidden="true" />
+            <div class="vsl-cover-content">
+              <div class="vsl-play" aria-hidden="true">
+                <svg viewBox="0 0 80 80" width="80" height="80">
+                  <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.96)"/>
+                  <polygon points="33,26 33,54 56,40" fill="#07082a"/>
+                </svg>
+              </div>
+              <div class="vsl-cover-meta">
+                <span class="vsl-cover-duration">⏱ 10 min</span>
+                <span class="vsl-cover-cta">Clique para assistir agora</span>
+              </div>
+            </div>
+          </div>
+          <!-- Iframe injetado via JS quando clicar (performance + privacidade) -->
+        </div>
+
+        <!-- Razões resumidas pra quem não vai assistir -->
+        <div class="vsl-reasons">
+          <header class="vsl-reasons-head">
+            <h3 class="vsl-reasons-title">Sem tempo agora? Aqui está o resumo.</h3>
+            <p class="vsl-reasons-sub">5 razões pelas quais a AVEND é diferente de qualquer outra opção.</p>
+          </header>
+
+          <div class="vsl-reasons-grid" data-reveal-stagger>
+            <article class="vsl-reason">
+              <div class="vsl-reason-num">01</div>
+              <h4>Modelo testado por mais de 10 anos</h4>
+              <p>
+                Não somos um experimento. <strong>+100 franqueados ativos</strong>,
+                <strong>+150 máquinas em operação própria</strong>, presença em
+                <strong>14 estados</strong>. Você está comprando histórico, não promessa.
+              </p>
+            </article>
+
+            <article class="vsl-reason">
+              <div class="vsl-reason-num">02</div>
+              <h4>BOM FRANQUEADO — incentivo único</h4>
+              <p>
+                A 2ª máquina em diante sai por <strong>R$ 35.000</strong> (vs. R$ 45k público),
+                <strong>sem nova taxa de franquia</strong>. Único na categoria com mecânica de
+                expansão alinhada ao crescimento do franqueado.
+              </p>
+            </article>
+
+            <article class="vsl-reason">
+              <div class="vsl-reason-num">03</div>
+              <h4>Tributação modelada com honestidade</h4>
+              <p>
+                Único simulador do setor que mostra a transição real
+                <strong>MEI → Simples Nacional → Lucro Presumido</strong> conforme você cresce.
+                Sem maquiagem, sem promessa vazia.
+              </p>
+            </article>
+
+            <article class="vsl-reason">
+              <div class="vsl-reason-num">04</div>
+              <h4>Patrimônio que fica com você</h4>
+              <p>
+                Cada máquina é <strong>ativo do franqueado</strong> (~R$ 28.500 cada).
+                Diferente de franquias onde o investimento vira "ponto" intangível,
+                aqui você sai com equipamento revendável.
+              </p>
+            </article>
+
+            <article class="vsl-reason">
+              <div class="vsl-reason-num">05</div>
+              <h4>Suporte e telemetria que funcionam</h4>
+              <p>
+                Cada máquina é <strong>monitorada em tempo real</strong>: vendas, estoque, falhas.
+                Sistema de gestão homologado, treinamento de ~40h e canal de suporte ativo.
+                Você decide com dados, não com intuição.
+              </p>
+            </article>
+
+            <article class="vsl-reason vsl-reason-cta-card">
+              <div class="vsl-reason-num">▶</div>
+              <h4>O resto está no vídeo</h4>
+              <p>
+                Os outros 80% do que importa estão lá em cima — números reais da rede,
+                explicação do modelo, e o que ninguém mais te conta.
+              </p>
+              <button class="vsl-scroll-up" id="vsl-scroll-up" type="button">
+                Voltar pro vídeo <span aria-hidden="true">↑</span>
+              </button>
+            </article>
+          </div>
+        </div>
+
+        <!-- CTAs de fechamento -->
+        <div class="vsl-cta-block">
+          <h3 class="vsl-cta-title">Pronto para o próximo passo?</h3>
+          <p class="vsl-cta-sub">Você decide o ritmo — escolhe o caminho mais natural pra você.</p>
+          <div class="vsl-cta-buttons">
+            <button class="vsl-cta-btn vsl-cta-whatsapp" id="vsl-whatsapp" type="button">
+              <span class="vsl-cta-icon" aria-hidden="true">💬</span>
+              <span class="vsl-cta-text">
+                <span class="vsl-cta-main">Falar agora com a AVEND</span>
+                <span class="vsl-cta-sub2">WhatsApp · resposta no mesmo dia</span>
+              </span>
+              <span class="vsl-cta-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="vsl-cta-btn vsl-cta-quiz" id="vsl-quiz" type="button">
+              <span class="vsl-cta-icon" aria-hidden="true">🎯</span>
+              <span class="vsl-cta-text">
+                <span class="vsl-cta-main">Diagnóstico personalizado</span>
+                <span class="vsl-cta-sub2">10 perguntas · plano sob medida</span>
+              </span>
+              <span class="vsl-cta-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== SIMULADOR ==================== -->
+    <section class="page" id="simulador">
+      <div class="section-head">
+        <h2 class="section-title">Simulador de Escala <span class="grad-text" id="sim-title-horizonte">60 Meses</span></h2>
+        <p class="section-sub">
+          Ajuste as variáveis e veja o efeito bola-de-neve do reinvestimento.
+        </p>
+        <div class="cenario-chip" aria-live="polite">
+          <span class="cenario-chip-dot" aria-hidden="true"></span>
+          <span class="cenario-chip-lbl">Cenário ativo:</span>
+          <strong id="cenario-label">Base · R$ 10.000/máq</strong>
+        </div>
+      </div>
+
+      <div class="sim-grid">
+        <!-- Controls -->
+        <aside class="controls card">
+          <h3 class="card-title">Variáveis do Cenário</h3>
+
+          <div class="control">
+            <label for="input_faturamento_maq">
+              Faturamento Médio / Máquina
+              <span class="ctl-unit">R$ / mês</span>
+            </label>
+            <div class="slider-row">
+              <input type="range" id="input_faturamento_maq" min="5000" max="30000" step="500" value="10000" />
+              <output id="out_faturamento_maq">R$ 10.000</output>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-group-title">🚀 Fase 1 — Reinvestimento agressivo</div>
+
+            <div class="control">
+              <label for="input_reinvest_fase1">
+                % do Lucro Reinvestido
+                <span class="ctl-unit">%</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_reinvest_fase1" min="50" max="100" step="5" value="100" />
+                <output id="out_reinvest_fase1">100%</output>
+              </div>
+            </div>
+
+            <div class="control">
+              <label for="input_duracao_fase1">
+                Duração da Fase 1
+                <span class="ctl-unit">anos</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_duracao_fase1" min="12" max="120" step="12" value="36" />
+                <output id="out_duracao_fase1">3 anos</output>
+              </div>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-group-title">💰 Fase 2 — Pró-labore + escala</div>
+
+            <div class="control">
+              <label for="input_reinvest_fase2">
+                % do Lucro Reinvestido
+                <span class="ctl-unit">%</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_reinvest_fase2" min="0" max="100" step="5" value="50" />
+                <output id="out_reinvest_fase2">50%</output>
+              </div>
+            </div>
+          </div>
+
+          <div class="ctl-group">
+            <div class="ctl-group-title">⚙️ Operação</div>
+
+            <div class="control">
+              <label for="input_reserva_capital">
+                Reserva de Capital por Máquina
+                <span class="ctl-unit">R$</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_reserva_capital" min="2000" max="10000" step="500" value="5000" />
+                <output id="out_reserva_capital">R$ 5.000</output>
+              </div>
+            </div>
+
+            <div class="control">
+              <label for="input_capacidade_implantacao">
+                Capacidade de Implantação
+                <span class="ctl-unit">máq / mês</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_capacidade_implantacao" min="1" max="5" step="1" value="2" />
+                <output id="out_capacidade_implantacao">2/mês</output>
+              </div>
+            </div>
+
+            <div class="control">
+              <label for="input_horizonte">
+                Horizonte da Projeção
+                <span class="ctl-unit">anos</span>
+              </label>
+              <div class="slider-row">
+                <input type="range" id="input_horizonte" min="36" max="120" step="12" value="60" />
+                <output id="out_horizonte">5 anos</output>
+              </div>
+            </div>
+          </div>
+
+          <div class="presets">
+            <button class="chip" data-preset="conservador">Conservador</button>
+            <button class="chip" data-preset="base">Base</button>
+            <button class="chip" data-preset="otimista">Otimista</button>
+            <button class="chip chip-turbo" data-preset="turbo">Turbo ⚡</button>
+          </div>
+
+          <div class="formula-info formula-info-open">
+            <h4 class="formula-title">Estrutura de custos (modelo realista)</h4>
+            <strong>Variáveis (% do faturamento):</strong>
+            <ul>
+              <li>CMV: 40%</li>
+              <li>Aluguel do ponto: 5% <em>(conservador — ~90% da rede não paga aluguel)</em></li>
+              <li>Royalties: 5%</li>
+              <li>Taxa de cartões: 1,45%</li>
+              <li>Operacional de rota: 3%</li>
+              <li>Perdas/vandalismo: 1%</li>
+            </ul>
+            <strong>Fixos por máquina (R$/mês):</strong>
+            <ul>
+              <li>Fundo Nacional de Propaganda: R$ 100</li>
+              <li>Sistema de Gestão: R$ 95</li>
+              <li>Manutenção/Suporte: R$ 100</li>
+            </ul>
+            <strong>Imposto dinâmico:</strong>
+            <ul>
+              <li>MEI até R$ 130k/ano → R$ 85/mês fixo</li>
+              <li>Acima: Simples Nacional Anexo I (4–19% efetiva)</li>
+            </ul>
+            <strong>Operação escalável:</strong>
+            <ul>
+              <li>Abastecedor CLT: R$ 4.000/mês a cada 10 máquinas</li>
+              <li>Contratação a partir da 6ª máquina</li>
+            </ul>
+            <strong>CAPEX por nova máquina:</strong>
+            <ul>
+              <li>Máquina adicional: <strong>R$ 35.000</strong> — modalidade <em>BOM FRANQUEADO</em> (incentivo de expansão, sem nova taxa de franquia)</li>
+              <li>Reserva capital: configurável (R$ 5.000 default)</li>
+              <li>Frete + instalação: R$ 2.000</li>
+              <li>Abastecimento inicial: R$ 1.500</li>
+            </ul>
+            <p class="model-note-inline">
+              Preço público da máquina (1ª unidade): R$ 45.000. A 2ª máquina em diante,
+              franqueados ativos acessam a modalidade <em>BOM FRANQUEADO</em> a R$ 35.000.
+            </p>
+          </div>
+        </aside>
+
+        <!-- Outputs -->
+        <div class="sim-outputs">
+          <div class="kpi-row">
+            <div class="mini-kpi">
+              <span class="mini-lbl">Lucro / Máquina / mês</span>
+              <span class="mini-val" id="mini-lucro-maq">—</span>
+            </div>
+            <div class="mini-kpi">
+              <span class="mini-lbl">Custo nova máquina</span>
+              <span class="mini-val" id="mini-custo-nova">—</span>
+            </div>
+            <div class="mini-kpi">
+              <span class="mini-lbl">Total de máquinas</span>
+              <span class="mini-val" id="mini-frota-final">—</span>
+            </div>
+            <div class="mini-kpi">
+              <span class="mini-lbl">Lucro mensal final</span>
+              <span class="mini-val" id="mini-lucro-final">—</span>
+            </div>
+            <div class="mini-kpi mini-kpi-hl">
+              <span class="mini-lbl">Pró-labore total</span>
+              <span class="mini-val" id="mini-prolabore">—</span>
+            </div>
+            <div class="mini-kpi mini-kpi-asset">
+              <span class="mini-lbl">Patrimônio (todas as máquinas)</span>
+              <span class="mini-val" id="mini-patrimonio">—</span>
+              <span class="mini-hint">R$ 28.500 / máquina · ativo do franqueado</span>
+            </div>
+          </div>
+
+          <div class="card chart-card">
+            <h3 class="card-title">Crescimento das Máquinas AVEND</h3>
+            <div class="chart-wrap"><canvas id="chart-frota"></canvas></div>
+          </div>
+
+          <div class="card chart-card">
+            <h3 class="card-title">Faturamento e Lucro Mensal Total</h3>
+            <div class="chart-wrap"><canvas id="chart-financeiro"></canvas></div>
+          </div>
+
+          <div class="card chart-card">
+            <h3 class="card-title">Caixa para Reinvestimento</h3>
+            <div class="chart-wrap"><canvas id="chart-caixa"></canvas></div>
+          </div>
+
+          <div class="card table-card">
+            <h3 class="card-title">Evolução Detalhada · 60 Meses</h3>
+            <div class="table-scroll">
+              <table class="sim-table">
+                <thead>
+                  <tr>
+                    <th>Mês</th>
+                    <th>Fase</th>
+                    <th>Máq.</th>
+                    <th>Faturamento</th>
+                    <th>Imposto</th>
+                    <th>Lucro Líq.</th>
+                    <th>Reinv. / Pró-lab.</th>
+                    <th>Caixa Exp.</th>
+                    <th>Patrimônio</th>
+                    <th>Evento</th>
+                  </tr>
+                </thead>
+                <tbody id="sim-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TIMELINE ==================== -->
+    <section class="page" id="timeline">
+      <div class="section-head">
+        <h2 class="section-title">Linha do Tempo da Expansão</h2>
+        <p class="section-sub">
+          Marcos de crescimento ao longo dos 60 meses — com base no cenário atual do simulador.
+        </p>
+      </div>
+
+      <div class="timeline" id="timeline-list"></div>
+    </section>
+
+    <!-- ==================== MODELOS ==================== -->
+    <section class="page" id="modelos">
+      <div class="section-head">
+        <h2 class="section-title">Comparativo de Modelos de Aquisição</h2>
+        <p class="section-sub">
+          Analise as opções e encontre o caminho ideal para sua expansão.
+        </p>
+      </div>
+
+      <div class="models-note">
+        <span>Valores recalculados dinamicamente a partir do cenário selecionado no simulador.</span>
+      </div>
+
+      <div class="models-grid" data-reveal-stagger>
+        <article class="model-card model-1">
+          <div class="model-badge">Entrada</div>
+          <h3>Comprar 1ª Máquina</h3>
+          <div class="model-price" id="cmp-m1-invest">—</div>
+          <ul class="model-features">
+            <li><span class="tick">✓</span> Franquia + 1ª máquina incluídas</li>
+            <li><span class="tick">✓</span> Propriedade total do equipamento</li>
+            <li><span class="tick">✓</span> Payback: <strong id="cmp-m1-payback">—</strong></li>
+            <li><span class="tick">✓</span> Lucro líquido: <strong id="cmp-m1-lucro">—</strong>/mês</li>
+            <li><span class="tick">✓</span> Regime: <strong id="cmp-m1-regime">—</strong></li>
+          </ul>
+          <div class="model-note">Ideal para iniciar e validar o modelo.</div>
+        </article>
+
+        <article class="model-card model-2 highlight">
+          <div class="model-badge">Acelerar</div>
+          <h3>Comprar 2ª Máquina</h3>
+          <div class="model-price" id="cmp-m2-invest">—</div>
+          <ul class="model-features">
+            <li><span class="tick">✓</span> Sem nova taxa de franquia</li>
+            <li><span class="tick">✓</span> Payback: <strong id="cmp-m2-payback">—</strong></li>
+            <li><span class="tick">✓</span> Lucro combinado: <strong id="cmp-m2-lucro">—</strong>/mês</li>
+            <li><span class="tick">✓</span> Regime: <strong id="cmp-m2-regime">—</strong></li>
+          </ul>
+          <div class="model-note">Flywheel ativado — reinvestimento dos lucros da 1ª.</div>
+        </article>
+
+        <article class="model-card model-3">
+          <div class="model-badge selected">Franqueados selecionados</div>
+          <h3>Aluguel com Abatimento</h3>
+          <div class="model-price">Consulte condições</div>
+          <ul class="model-features">
+            <li><span class="tick">✓</span> <strong>CAPEX inicial reduzido</strong> — opere antes de comprar</li>
+            <li><span class="tick">✓</span> 1º ano: opção de compra com <strong>abatimento de ~R$ 22k</strong></li>
+            <li><span class="tick">✓</span> 2º ano: opção de compra com <strong>abatimento de ~R$ 18k</strong></li>
+            <li><span class="tick">✓</span> Flexibilidade de saída durante a locação</li>
+            <li><span class="tick">✓</span> Modelo ideal para <strong>perfis de operação validados</strong></li>
+          </ul>
+          <div class="model-note">
+            Modalidade <strong>exclusiva</strong> — não disponível para todos os perfis.
+            Acesso sujeito à análise AVEND de histórico, perfil do franqueado e qualidade do ponto.
+          </div>
+        </article>
+      </div>
+
+      <div class="compare-table card">
+        <h3 class="card-title">Comparativo rápido</h3>
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th>KPI</th>
+              <th>1ª Máquina</th>
+              <th>2ª Máquina</th>
+              <th>Aluguel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Investimento</td><td id="cmp-tab-invest-1">—</td><td id="cmp-tab-invest-2">—</td><td>R$ 3.000</td></tr>
+            <tr><td>Payback estimado</td><td id="cmp-tab-payback-1">—</td><td id="cmp-tab-payback-2">—</td><td>8–10 meses</td></tr>
+            <tr><td>Lucro líquido/mês</td><td id="cmp-tab-lucro-1">—</td><td id="cmp-tab-lucro-2">—</td><td>R$ 2.900–3.200</td></tr>
+            <tr><td>Margem líquida</td><td id="cmp-tab-margem-1">—</td><td id="cmp-tab-margem-2">—</td><td>25–30%</td></tr>
+            <tr><td>Regime tributário</td><td id="cmp-tab-regime-1">—</td><td id="cmp-tab-regime-2">—</td><td>Simples Nacional</td></tr>
+            <tr><td>Propriedade</td><td>Sim</td><td>Sim</td><td>Compra abatida</td></tr>
+            <tr><td>Flexibilidade</td><td>Média</td><td>Alta</td><td>Alta</td></tr>
+            <tr><td>Potencial de escala</td><td>★★★</td><td>★★★★★</td><td>★★★★★</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- O QUE VOCÊ RECEBE -->
+    <section class="page" id="recebe">
+      <header class="page-head">
+        <h2 class="page-title">
+          O que você recebe
+        </h2>
+        <p class="page-sub">
+          Você não está comprando uma máquina. Está comprando <strong>10 anos de operação validada</strong>.
+        </p>
+      </header>
+
+      <div class="recebe-grid">
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">📚</span>
+            <div>
+              <h3 class="recebe-title">Treinamento Estratégico</h3>
+              <p class="recebe-sub">Acesso ao know-how validado</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Programa completo cobrindo operação das máquinas, controle de estoque e
+            negociação de pontos — a transferência do nosso modelo testado e aprovado.
+          </p>
+          <ul class="recebe-list">
+            <li>~40 horas de conteúdo programático</li>
+            <li>Online via Portal do Franqueado, com opção presencial</li>
+            <li>Acesso contínuo a módulos complementares</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill recebe-pill-ok">Incluso na taxa de franquia</span>
+            <span class="recebe-ref">COF · Seção 16</span>
+          </footer>
+        </article>
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">📡</span>
+            <div>
+              <h3 class="recebe-title">Suporte Operacional Contínuo</h3>
+              <p class="recebe-sub">Gestão facilitada, resultados amplificados</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Sistema de telemetria e gestão para monitoramento em tempo real:
+            performance de cada máquina, histórico de vendas, necessidade de
+            reabastecimento e suporte técnico via sistema.
+          </p>
+          <ul class="recebe-list">
+            <li>Decisão baseada em dados</li>
+            <li>Otimização de rotas de reabastecimento</li>
+            <li>Identificação proativa de falhas</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill">~R$ 95/mês · fornecedor homologado</span>
+            <span class="recebe-ref">COF · Seção 12.4</span>
+          </footer>
+        </article>
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">📍</span>
+            <div>
+              <h3 class="recebe-title">Identificação e Validação de Pontos</h3>
+              <p class="recebe-sub">O ponto certo para o seu sucesso</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Orientação estratégica para identificar pontos comerciais com alto
+            potencial, com ferramentas de geolocalização e inteligência de mercado AVEND.
+          </p>
+          <ul class="recebe-list">
+            <li>Recomendação de locais com potencial validado</li>
+            <li>Suporte na negociação com proprietários</li>
+            <li>Materiais de apoio para prospecção</li>
+            <li>Negociação e formalização: responsabilidade do franqueado</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill recebe-pill-ok">Suporte contínuo · incluso</span>
+            <span class="recebe-ref">COF · Seções 8.2.a e 16.1.d</span>
+          </footer>
+        </article>
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">📖</span>
+            <div>
+              <h3 class="recebe-title">Manuais e Padronização</h3>
+              <p class="recebe-sub">O mapa da sua operação de alta performance</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Manuais detalhados cobrindo configuração da máquina, mix de produtos,
+            manutenção e relacionamento com clientes — para replicar o sucesso da rede.
+          </p>
+          <ul class="recebe-list">
+            <li>Curva de aprendizado reduzida</li>
+            <li>Consistência da marca em todas unidades</li>
+            <li>Diretrizes operacionais testadas</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill recebe-pill-ok">Inclusos na taxa de franquia</span>
+            <span class="recebe-ref">COF · Seção 16</span>
+          </footer>
+        </article>
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">⭐</span>
+            <div>
+              <h3 class="recebe-title">Marca e Marketing Colaborativo</h3>
+              <p class="recebe-sub">A força de uma marca consolidada</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Você opera sob a marca AVEND, registrada no INPI. A rede contribui
+            coletivamente para campanhas de marketing e fortalecimento de marca.
+          </p>
+          <ul class="recebe-list">
+            <li>Marca com registro INPI</li>
+            <li>Credibilidade e reconhecimento de mercado</li>
+            <li>Campanhas financiadas pelo FNP</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill">FNP · R$ 100/máquina/mês</span>
+            <span class="recebe-ref">COF · Seções 12.3 e 17</span>
+          </footer>
+        </article>
+
+        <article class="recebe-card">
+          <header class="recebe-head">
+            <span class="recebe-icon">🎯</span>
+            <div>
+              <h3 class="recebe-title">Liberdade e Flexibilidade</h3>
+              <p class="recebe-sub">Seu negócio, suas regras — com nosso suporte</p>
+            </div>
+          </header>
+          <p class="recebe-desc">
+            Modelo permite gestão flexível — operação integral ou renda complementar —
+            mas exige envolvimento ativo do franqueado para o sucesso.
+          </p>
+          <ul class="recebe-list">
+            <li>Dedicação flexível conforme perfil</li>
+            <li>Transferência da unidade prevista em contrato</li>
+            <li>Rescisão e saída com regras claras na COF</li>
+          </ul>
+          <footer class="recebe-foot">
+            <span class="recebe-pill">Transferência: 1× taxa de franquia vigente</span>
+            <span class="recebe-ref">COF · Seções 10, 20 e 21</span>
+          </footer>
+        </article>
+
+      </div>
+
+      <div class="recebe-excl card">
+        <h3 class="card-title">O que NÃO está incluso</h3>
+        <p class="card-sub">Transparência ganha confiança — abaixo, custos sob responsabilidade do franqueado.</p>
+        <ul class="recebe-excl-list">
+          <li><strong>Aluguel do ponto</strong> — <strong>~90% da rede AVEND não paga aluguel</strong> (a máquina vai gratuita pro estabelecimento). Em alguns casos premium, o franqueado até <em>recebe</em> pra estar lá. Quando há cobrança, fica em ~5% do faturamento, negociada direto pelo franqueado</li>
+          <li><strong>Equipe operacional</strong> — abastecedor CLT (~R$ 4k/mês a partir da 6ª máquina)</li>
+          <li><strong>Combustível e logística</strong> — rota de reabastecimento (~3% do faturamento)</li>
+          <li><strong>Estoque e produtos</strong> — CMV ~40% do faturamento</li>
+          <li><strong>Custos de transporte e instalação</strong> — variável por região</li>
+          <li><strong>Impostos sobre faturamento</strong> — MEI, Simples ou LP conforme escala</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- MERCADO -->
+    <section class="page" id="mercado">
+      <header class="page-head">
+        <h2 class="page-title">
+          O mercado está abrindo. <strong class="grad-text">Agora.</strong>
+        </h2>
+        <p class="page-sub">
+          O Brasil tem <strong>1 vending machine para cada 2.500 habitantes</strong>.
+          O Japão tem 1 para cada 25. Os EUA, 1 para cada 65.
+          Não é uma anomalia — é uma <strong>janela de oportunidade que está se abrindo</strong>.
+        </p>
+      </header>
+
+      <!-- BLOCO ANÁLISE DA SUA CIDADE — diagnóstico de território standalone -->
+      <div class="mkt-territory-block" id="mkt-territory-block">
+        <header class="mkt-territory-block-head">
+          <span class="mkt-territory-block-icon" aria-hidden="true">📍</span>
+          <div>
+            <h3 class="mkt-territory-block-title">Quanto mercado existe na <em>sua cidade</em>?</h3>
+            <p class="mkt-territory-block-sub">
+              Digite a cidade e descubra na hora quantas máquinas o território comporta,
+              quantas já operam e quantos pontos premium estão disponíveis para a sua operação.
+            </p>
+          </div>
+        </header>
+
+        <form class="mkt-territory-search" id="mkt-territory-search"
+              action="javascript:void(0);" autocomplete="off">
+          <div class="mkt-territory-input-wrap">
+            <span class="mkt-territory-input-icon" aria-hidden="true">🔍</span>
+            <input type="text" class="mkt-territory-input" id="mkt-territory-city"
+                   placeholder="Ex: São Paulo / SP — ou só Curitiba"
+                   list="mkt-territory-list"
+                   autocomplete="off"
+                   spellcheck="false"
+                   maxlength="80" />
+            <datalist id="mkt-territory-list"></datalist>
+          </div>
+          <button type="submit" class="mkt-territory-btn">
+            Analisar mercado <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <p class="mkt-territory-hint">
+          <strong id="mkt-territory-count">— cidades</strong> · base IBGE 2025.
+          Se algo não bater, informe a população estimada manualmente.
+        </p>
+
+        <div class="market-territory-wrap" id="market-territory-standalone" hidden></div>
+      </div>
+
+      <!-- HEADLINE STATS — 4 grandes números -->
+      <div class="mkt-headline-grid" data-reveal-stagger>
+        <article class="mkt-headline mkt-headline-a">
+          <div class="mkt-headline-eyebrow">Densidade Brasil</div>
+          <div class="mkt-headline-val">1 : 2.500</div>
+          <div class="mkt-headline-lbl">habitantes por máquina</div>
+          <div class="mkt-headline-foot">vs. 1 : 25 no Japão · 1 : 65 nos EUA</div>
+        </article>
+        <article class="mkt-headline mkt-headline-b">
+          <div class="mkt-headline-eyebrow">Mercado nacional</div>
+          <div class="mkt-headline-val">+10–15%</div>
+          <div class="mkt-headline-lbl">crescimento anual desde 2018</div>
+          <div class="mkt-headline-foot">CAGR 11,58% projetado para máquinas inteligentes até 2032 (ABVM)</div>
+        </article>
+        <article class="mkt-headline mkt-headline-c">
+          <div class="mkt-headline-eyebrow">Apagão de mão de obra</div>
+          <div class="mkt-headline-val">57%</div>
+          <div class="mkt-headline-lbl">das ocupações do comércio com escassez</div>
+          <div class="mkt-headline-foot">Maior nível desde 2020 · CNC, jul/2025</div>
+        </article>
+        <article class="mkt-headline mkt-headline-d">
+          <div class="mkt-headline-eyebrow">Automação no varejo</div>
+          <div class="mkt-headline-val">CAGR 6,2%</div>
+          <div class="mkt-headline-lbl">retail automation no Brasil até 2030</div>
+          <div class="mkt-headline-foot">Maior CAGR mundial · Grand View Research</div>
+        </article>
+      </div>
+
+      <!-- BLOCO 1: COMPARATIVO INTERNACIONAL -->
+      <div class="mkt-block card">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">🌐</span>
+          <div>
+            <h3 class="card-title">O Brasil está <em>9× atrás</em> dos países desenvolvidos</h3>
+            <p class="mkt-block-sub">
+              Densidade de vending machines em economias maduras × Brasil — quanto menor o número
+              de habitantes por máquina, maior a penetração do varejo automatizado.
+            </p>
+          </div>
+        </header>
+
+        <div class="mkt-density-grid">
+          <article class="mkt-country mkt-country-jp">
+            <div class="mkt-country-flag" aria-hidden="true">🇯🇵</div>
+            <div class="mkt-country-name">Japão</div>
+            <div class="mkt-country-stat">
+              <span class="mkt-stat-big">1 : 25</span>
+              <span class="mkt-stat-small">hab/máq</span>
+            </div>
+            <div class="mkt-country-detail">
+              <strong>4,1 milhões</strong> de máquinas em operação. Maior densidade do mundo.
+              Vendem desde refeições quentes até guarda-chuvas.
+            </div>
+            <div class="mkt-country-bar">
+              <span class="mkt-bar-fill" style="width: 100%; background: linear-gradient(90deg, #39e887, #3DD9D6);"></span>
+            </div>
+          </article>
+
+          <article class="mkt-country mkt-country-kr">
+            <div class="mkt-country-flag" aria-hidden="true">🇰🇷</div>
+            <div class="mkt-country-name">Coreia do Sul</div>
+            <div class="mkt-country-stat">
+              <span class="mkt-stat-big">1 : 65</span>
+              <span class="mkt-stat-small">hab/máq</span>
+            </div>
+            <div class="mkt-country-detail">
+              <strong>780 mil</strong> máquinas. Foco em smart vending — 5,9% do mercado global.
+              Ecossistema digital integrado a smart cities.
+            </div>
+            <div class="mkt-country-bar">
+              <span class="mkt-bar-fill" style="width: 38%; background: linear-gradient(90deg, #3DD9D6, #4B6CE2);"></span>
+            </div>
+          </article>
+
+          <article class="mkt-country mkt-country-us">
+            <div class="mkt-country-flag" aria-hidden="true">🇺🇸</div>
+            <div class="mkt-country-name">Estados Unidos</div>
+            <div class="mkt-country-stat">
+              <span class="mkt-stat-big">1 : 65</span>
+              <span class="mkt-stat-small">hab/máq</span>
+            </div>
+            <div class="mkt-country-detail">
+              <strong>~5 milhões</strong> de máquinas. Mercado mais maduro do Ocidente.
+              Forte presença em escolas, hospitais e indústrias.
+            </div>
+            <div class="mkt-country-bar">
+              <span class="mkt-bar-fill" style="width: 38%; background: linear-gradient(90deg, #3DD9D6, #4B6CE2);"></span>
+            </div>
+          </article>
+
+          <article class="mkt-country mkt-country-cn">
+            <div class="mkt-country-flag" aria-hidden="true">🇨🇳</div>
+            <div class="mkt-country-name">China</div>
+            <div class="mkt-country-stat">
+              <span class="mkt-stat-big">1 : 500</span>
+              <span class="mkt-stat-small">hab/máq</span>
+            </div>
+            <div class="mkt-country-detail">
+              <strong>2,8 milhões</strong> de máquinas. Mercado em explosão: USD 4,79 bi em 2024,
+              chegando a USD 6,57 bi em 2030.
+            </div>
+            <div class="mkt-country-bar">
+              <span class="mkt-bar-fill" style="width: 14%; background: linear-gradient(90deg, #4B6CE2, #8B30E6);"></span>
+            </div>
+          </article>
+
+          <article class="mkt-country mkt-country-br is-gap">
+            <div class="mkt-country-flag" aria-hidden="true">🇧🇷</div>
+            <div class="mkt-country-name">Brasil</div>
+            <div class="mkt-country-stat">
+              <span class="mkt-stat-big">1 : 2.500</span>
+              <span class="mkt-stat-small">hab/máq</span>
+            </div>
+            <div class="mkt-country-detail">
+              Apenas <strong>~80 a 102 mil</strong> máquinas em todo o país.
+              <strong>70% vendem só café</strong> — espaço gigante para snack/bebida fria/saudável.
+            </div>
+            <div class="mkt-country-bar">
+              <span class="mkt-bar-fill" style="width: 3%; background: linear-gradient(90deg, #ffb020, #8B30E6);"></span>
+              <span class="mkt-bar-gap">↑ aqui está a janela</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="mkt-insight">
+          <span class="mkt-insight-icon" aria-hidden="true">💡</span>
+          <p>
+            <strong>Pra equiparar a densidade dos EUA</strong>, o Brasil precisaria sair de
+            ~100 mil para <strong>~3,2 milhões</strong> de máquinas — um aumento de
+            <strong>~32×</strong>. Pra equiparar o Japão, seriam <strong>~8,5 milhões</strong>.
+            Em qualquer dos dois caminhos, há uma década inteira de crescimento à frente.
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOCO 2: TAMANHO DO MERCADO -->
+      <div class="mkt-block card">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">📈</span>
+          <div>
+            <h3 class="card-title">O mercado está crescendo em todos os recortes</h3>
+            <p class="mkt-block-sub">
+              Indicadores globais e nacionais convergem: vending machines é uma das categorias
+              mais consistentes de crescimento em retail.
+            </p>
+          </div>
+        </header>
+
+        <div class="mkt-growth-grid">
+          <div class="mkt-growth-card">
+            <div class="mkt-growth-eyebrow">Mercado global</div>
+            <div class="mkt-growth-val">USD 27,7 bi → 34,9 bi</div>
+            <div class="mkt-growth-lbl">2024 → 2030 · CAGR de 6 a 8%</div>
+            <p class="mkt-growth-desc">
+              Cashless já representa <strong>75,8%</strong> da receita global do setor — alinhado
+              com Pix e mobile no Brasil.
+            </p>
+          </div>
+          <div class="mkt-growth-card">
+            <div class="mkt-growth-eyebrow">Mercado brasileiro</div>
+            <div class="mkt-growth-val">R$ 1,3 bi+</div>
+            <div class="mkt-growth-lbl">faturamento setor (ABVM, 2020)</div>
+            <p class="mkt-growth-desc">
+              Crescimento médio anual <strong>10–15%</strong> desde 2018. Smart vending com
+              <strong>CAGR 11,58%</strong> projetado até 2032.
+            </p>
+          </div>
+          <div class="mkt-growth-card">
+            <div class="mkt-growth-eyebrow">Retail automation Brasil</div>
+            <div class="mkt-growth-val">USD 677 mi → 1,03 bi</div>
+            <div class="mkt-growth-lbl">2023 → 2030 · CAGR 6,2%</div>
+            <p class="mkt-growth-desc">
+              <strong>Maior CAGR do mundo</strong> em automação de varejo — Brasil lidera em ritmo
+              de adoção (Grand View Research).
+            </p>
+          </div>
+          <div class="mkt-growth-card">
+            <div class="mkt-growth-eyebrow">Cashless / Pix</div>
+            <div class="mkt-growth-val">+90% adultos</div>
+            <div class="mkt-growth-lbl">Brasil usa Pix · BCB 2024</div>
+            <p class="mkt-growth-desc">
+              A barreira de pagamento que travou vending no Brasil por décadas
+              <strong>foi removida</strong>. A máquina aceita Pix, débito, crédito e NFC.
+            </p>
+          </div>
+        </div>
+
+        <div class="mkt-chart-wrap card-inner">
+          <h4 class="mkt-chart-title">Densidade global · habitantes por máquina (escala log)</h4>
+          <div class="chart-wrap"><canvas id="mkt-chart-density"></canvas></div>
+          <p class="mkt-chart-note">
+            Eixo invertido: barras menores = mais máquinas por pessoa = mercado mais maduro.
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOCO 3: MÃO DE OBRA -->
+      <div class="mkt-block card">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">⚠️</span>
+          <div>
+            <h3 class="card-title">O custo humano está estrangulando o varejo tradicional</h3>
+            <p class="mkt-block-sub">
+              Vending machines não são alternativa — são solução estrutural para um problema
+              que só vai piorar.
+            </p>
+          </div>
+        </header>
+
+        <div class="mkt-labor-grid">
+          <article class="mkt-labor-card">
+            <div class="mkt-labor-num">57%</div>
+            <h4>Escassez no comércio</h4>
+            <p>
+              Das principais ocupações do comércio brasileiro apresentam indícios de escassez de
+              mão de obra (jul/2025) — <strong>maior nível desde 2020</strong>, segundo a CNC.
+            </p>
+          </article>
+          <article class="mkt-labor-card">
+            <div class="mkt-labor-num">75%</div>
+            <h4>Salários em alta</h4>
+            <p>
+              Das ocupações do comércio registraram avanço de salário de admissão
+              <strong>acima da média do mercado formal</strong> (jul/2024 a jul/2025).
+              Custo trabalhista pressionado.
+            </p>
+          </article>
+          <article class="mkt-labor-card">
+            <div class="mkt-labor-num">+70 a 80%</div>
+            <h4>Encargos sobre o salário</h4>
+            <p>
+              Um funcionário CLT custa <strong>até 3× o salário base</strong> com INSS, FGTS,
+              férias, 13º, vale-alimentação e provisões. Salário mínimo subiu 7,7% só em 2024.
+            </p>
+          </article>
+          <article class="mkt-labor-card">
+            <div class="mkt-labor-num">5,8%</div>
+            <h4>Desemprego em mínima histórica</h4>
+            <p>
+              Menor taxa desde o início da série do IBGE. Significa
+              <strong>poucos candidatos disponíveis</strong> e altíssima rotatividade nos pontos
+              comerciais que dependem de atendimento humano.
+            </p>
+          </article>
+        </div>
+
+        <div class="mkt-insight mkt-insight-warn">
+          <span class="mkt-insight-icon" aria-hidden="true">🔥</span>
+          <p>
+            Enquanto o varejo tradicional luta com escassez, custo crescente e turnover,
+            a vending machine <strong>opera 24/7, sem CLT, sem férias, sem rotatividade</strong> —
+            um único abastecedor atende 10 máquinas. A matemática só piora pro varejo humano daqui
+            pra frente.
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOCO 4: TENDÊNCIAS DE CONSUMO -->
+      <div class="mkt-block card">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">🛒</span>
+          <div>
+            <h3 class="card-title">O comportamento do consumidor mudou. Pra sempre.</h3>
+            <p class="mkt-block-sub">
+              Os 4 vetores que tornam vending um ativo defensável na próxima década.
+            </p>
+          </div>
+        </header>
+
+        <div class="mkt-trends-grid">
+          <article class="mkt-trend">
+            <span class="mkt-trend-icon" aria-hidden="true">⏱️</span>
+            <h4>Conveniência 24h</h4>
+            <p>
+              Pós-pandemia, <strong>71% dos consumidores brasileiros</strong> priorizam economia
+              de tempo (relatório PwC). Vending entrega produto em &lt;15 segundos, sem fila,
+              sem atendente.
+            </p>
+          </article>
+          <article class="mkt-trend">
+            <span class="mkt-trend-icon" aria-hidden="true">📱</span>
+            <h4>Pagamento digital nativo</h4>
+            <p>
+              Pix está em <strong>+90%</strong> dos adultos. As máquinas AVEND aceitam Pix,
+              débito, crédito e NFC — barreira de fricção <strong>zero</strong>.
+            </p>
+          </article>
+          <article class="mkt-trend">
+            <span class="mkt-trend-icon" aria-hidden="true">🤖</span>
+            <h4>Aceitação cultural</h4>
+            <p>
+              Self-checkout, supermercados sem caixa, postos sem frentista, restaurantes com
+              QR-code. <strong>O brasileiro já se acostumou</strong> a operar sozinho — vending
+              é o próximo passo natural.
+            </p>
+          </article>
+          <article class="mkt-trend">
+            <span class="mkt-trend-icon" aria-hidden="true">🌎</span>
+            <h4>ESG &amp; pegada operacional</h4>
+            <p>
+              Máquinas modernas reduzem perdas, otimizam logística por telemetria e têm
+              <strong>menor pegada de CO₂</strong> que loja física equivalente. Boa narrativa
+              pra contratos B2B.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <!-- BLOCO 5: POR QUE AVEND -->
+      <div class="mkt-block card mkt-why">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">⚡</span>
+          <div>
+            <h3 class="card-title">Por que AVEND, agora</h3>
+            <p class="mkt-block-sub">
+              O mercado é grande, mas escolher a marca certa é o que define payback e tranquilidade.
+            </p>
+          </div>
+        </header>
+
+        <div class="mkt-why-grid">
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">01</div>
+            <h4>Operação validada há mais de uma década</h4>
+            <p>
+              Não somos um experimento. Somos uma operação <strong>auditada por reportagens
+              da EXAME, PEGN, Portal do Franchising</strong> — com mais de 100 franqueados ativos
+              e 150+ máquinas em operação própria.
+            </p>
+          </article>
+
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">02</div>
+            <h4>Modelo de incentivo BOM FRANQUEADO</h4>
+            <p>
+              A 2ª máquina em diante sai por <strong>R$ 35.000</strong> (vs. R$ 45k público),
+              sem nova taxa de franquia. <strong>Único na categoria</strong> com mecânica de
+              expansão alinhada ao crescimento do franqueado.
+            </p>
+          </article>
+
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">03</div>
+            <h4>Tributação modelada com honestidade</h4>
+            <p>
+              Único simulador do setor que mostra a transição real
+              <strong>MEI → Simples Nacional → Lucro Presumido</strong> à medida que sua receita
+              cresce. Sem maquiagem, sem promessa vazia.
+            </p>
+          </article>
+
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">04</div>
+            <h4>Telemetria + sistema de gestão homologados</h4>
+            <p>
+              Cada máquina é <strong>monitorada em tempo real</strong>: vendas, estoque,
+              falhas. O franqueado decide com base em dados, não em intuição. Suporte
+              operacional contínuo via sistema.
+            </p>
+          </article>
+
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">05</div>
+            <h4>Patrimônio que fica com você</h4>
+            <p>
+              Cada máquina é <strong>ativo do franqueado</strong> (~R$ 28.500 cada). Diferente de
+              franquias onde o investimento vira "ponto" intangível, aqui você sai com
+              equipamento revendável.
+            </p>
+          </article>
+
+          <article class="mkt-why-card">
+            <div class="mkt-why-num">06</div>
+            <h4>Cobertura nacional · 14 estados</h4>
+            <p>
+              Logística e suporte distribuídos. Você não compra uma marca regional — compra
+              presença nacional, com aprendizado consolidado de
+              <strong>diferentes perfis de ponto</strong>: condomínio, hospital, indústria,
+              academia, coworking.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <!-- BLOCO 6: FONTES / METODOLOGIA -->
+      <div class="mkt-block card mkt-sources-block">
+        <header class="mkt-block-head">
+          <span class="mkt-block-icon" aria-hidden="true">📚</span>
+          <div>
+            <h3 class="card-title">Fontes e metodologia</h3>
+            <p class="mkt-block-sub">
+              Todos os dados desta página vêm de relatórios públicos, órgãos oficiais e
+              associações setoriais — clique em qualquer item para validar a fonte primária.
+            </p>
+          </div>
+        </header>
+
+        <div class="src-meta-strip">
+          <div class="src-meta">
+            <span class="src-meta-num">18</span>
+            <span class="src-meta-lbl">fontes consultadas</span>
+          </div>
+          <div class="src-meta">
+            <span class="src-meta-num">4</span>
+            <span class="src-meta-lbl">categorias temáticas</span>
+          </div>
+          <div class="src-meta">
+            <span class="src-meta-num">2020–25</span>
+            <span class="src-meta-lbl">período de referência</span>
+          </div>
+          <div class="src-meta">
+            <span class="src-meta-num">100%</span>
+            <span class="src-meta-lbl">de fontes públicas verificáveis</span>
+          </div>
+        </div>
+
+        <div class="src-grid">
+
+          <!-- Categoria 1: Mercado global -->
+          <article class="src-cat">
+            <header class="src-cat-head src-cat-a">
+              <span class="src-cat-icon" aria-hidden="true">🌐</span>
+              <div>
+                <h5 class="src-cat-title">Mercado global &amp; densidade</h5>
+                <span class="src-cat-count">6 fontes</span>
+              </div>
+            </header>
+            <ul class="src-list">
+              <li class="src-item">
+                <a href="https://www.statista.com/statistics/815611/japan-vending-machine-numbers/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Statista</span>
+                  <span class="src-item-titulo">Japan vending machine numbers (2023)</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://eathealthy365.com/japan-s-vending-machine-empire-a-2025-deep-dive/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">EatHealthy365</span>
+                  <span class="src-item-titulo">Japan's Vending Machine Empire — 2025 Deep Dive</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.grandviewresearch.com/horizon/outlook/retail-vending-machine-market/south-korea" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Grand View Research</span>
+                  <span class="src-item-titulo">South Korea Retail Vending Market</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.grandviewresearch.com/horizon/outlook/retail-vending-machine-market/china" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Grand View Research</span>
+                  <span class="src-item-titulo">China Retail Vending Market</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.thebusinessresearchcompany.com/report/vending-machine-global-market-report" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Business Research Company</span>
+                  <span class="src-item-titulo">Global Vending Market Report 2030</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.bonafideresearch.com/product/250215771/global-vending-machine-market" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Bonafide Research</span>
+                  <span class="src-item-titulo">Global Vending Outlook 2030</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Categoria 2: Mercado brasileiro -->
+          <article class="src-cat">
+            <header class="src-cat-head src-cat-b">
+              <span class="src-cat-icon" aria-hidden="true">🇧🇷</span>
+              <div>
+                <h5 class="src-cat-title">Mercado brasileiro de vending</h5>
+                <span class="src-cat-count">5 fontes</span>
+              </div>
+            </header>
+            <ul class="src-list">
+              <li class="src-item">
+                <a href="https://abvm.ind.br/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">ABVM</span>
+                  <span class="src-item-titulo">Associação Brasileira de Vending Machines (oficial do setor)</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.abf.com.br/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">ABF</span>
+                  <span class="src-item-titulo">Associação Brasileira de Franchising — relatórios anuais do setor</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://sebrae.com.br/sites/PortalSebrae/artigos/conheca-as-microfranquias,8b5b7a521e865410VgnVCM1000003b74010aRCRD" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Sebrae</span>
+                  <span class="src-item-titulo">Microfranquias — modelos de negócio e tendências</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://mapadasfranquias.com.br/noticia/suprindo-pequenas-demandas-mercado-de-vending-machines-cresce-no-brasil-ano-a-ano" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Mapa das Franquias</span>
+                  <span class="src-item-titulo">Crescimento de vending no Brasil ano a ano</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://revistafae.fae.edu/revistafae/article/download/403/287" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Revista FAE (acadêmica)</span>
+                  <span class="src-item-titulo">Análise do mercado brasileiro de vending</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Categoria 3: Mão de obra -->
+          <article class="src-cat">
+            <header class="src-cat-head src-cat-c">
+              <span class="src-cat-icon" aria-hidden="true">⚠️</span>
+              <div>
+                <h5 class="src-cat-title">Mão de obra &amp; custo trabalhista</h5>
+                <span class="src-cat-count">4 fontes</span>
+              </div>
+            </header>
+            <ul class="src-list">
+              <li class="src-item">
+                <a href="https://portaldocomercio.org.br/acoes-institucionais/escassez-de-mao-de-obra-no-comercio-e-a-maior-dos-ultimos-cinco-anos/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">CNC · Portal do Comércio</span>
+                  <span class="src-item-titulo">Escassez de mão de obra recorde (jul/2025)</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://ces.ibge.gov.br/base-de-dados/metadados/mte/cadastro-geral-de-empregados-e-desempregados-caged.html" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">IBGE · CAGED (oficial)</span>
+                  <span class="src-item-titulo">Base de dados de admissões e demissões</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.noticiasaominuto.com.br/economia/2354351/salario-de-admissao-bate-recorde-com-apagao-de-mao-de-obra-e-alta-do-minimo" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Notícias ao Minuto</span>
+                  <span class="src-item-titulo">Salário de admissão bate recorde · CAGED</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://contaja.com.br/blog/quanto-custa-um-funcionario-para-empresa/" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Contaja</span>
+                  <span class="src-item-titulo">Encargos CLT e custo total do empregado</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Categoria 4: Automação varejo -->
+          <article class="src-cat">
+            <header class="src-cat-head src-cat-d">
+              <span class="src-cat-icon" aria-hidden="true">🤖</span>
+              <div>
+                <h5 class="src-cat-title">Automação de varejo &amp; tendências</h5>
+                <span class="src-cat-count">3 fontes</span>
+              </div>
+            </header>
+            <ul class="src-list">
+              <li class="src-item">
+                <a href="https://www.grandviewresearch.com/horizon/outlook/retail-automation-market/brazil" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Grand View Research</span>
+                  <span class="src-item-titulo">Brazil Retail Automation Market</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.fortunebusinessinsights.com/retail-automation-market-110514" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Fortune Business Insights</span>
+                  <span class="src-item-titulo">Retail Automation Market — Global</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+              <li class="src-item">
+                <a href="https://www.fortunebusinessinsights.com/self-checkout-system-market-106779" target="_blank" rel="noopener">
+                  <span class="src-item-veiculo">Fortune Business Insights</span>
+                  <span class="src-item-titulo">Self-Checkout System Market Outlook</span>
+                  <span class="src-item-arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            </ul>
+          </article>
+
+        </div>
+
+        <p class="mkt-sources-note">
+          <strong>Nota metodológica:</strong> algumas referências apresentam ranges distintos
+          (ex.: 80–102 mil máquinas no Brasil). Em divergências, mantivemos a faixa completa em
+          comparativos e adotamos a leitura mais conservadora em projeções financeiras.
+          Última revisão: abril/2026.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- NOSSA REDE -->
+    <section class="page" id="rede">
+      <header class="page-head">
+        <h2 class="page-title">
+          Nossa Rede
+        </h2>
+        <p class="page-sub">Quem já está operando e como é a rede AVEND por dentro.</p>
+      </header>
+
+      <div class="rede-stats card" data-reveal-stagger>
+        <div class="rede-stat">
+          <span class="rede-stat-val" data-rede-stat="franqueados">+100</span>
+          <span class="rede-stat-lbl">Franqueados ativos</span>
+        </div>
+        <div class="rede-stat">
+          <span class="rede-stat-val" data-rede-stat="maquinas">+150</span>
+          <span class="rede-stat-lbl">Máquinas em operação própria</span>
+        </div>
+        <div class="rede-stat">
+          <span class="rede-stat-val" data-rede-stat="estados">+14</span>
+          <span class="rede-stat-lbl">Estados com presença</span>
+        </div>
+        <div class="rede-stat">
+          <span class="rede-stat-val" data-rede-stat="anos">+10</span>
+          <span class="rede-stat-lbl">Anos de operação</span>
+        </div>
+      </div>
+
+      <!-- HERO DA MÁQUINA -->
+      <div class="rede-block card maquina-hero">
+        <div class="maquina-hero-grid">
+          <div class="maquina-hero-text">
+            <span class="maquina-hero-eyebrow">⚡ Hardware AVEND</span>
+            <h3 class="maquina-hero-title">
+              Máquina <span class="grad-text">robusta</span>,
+              tecnológica e segura.
+            </h3>
+            <p class="maquina-hero-desc">
+              Equipamento testado em campo por mais de uma década. Pagamento por
+              Pix, débito, crédito e NFC. Sistema 24/7 com telemetria em tempo real
+              e SAC para o consumidor diretamente na máquina.
+            </p>
+            <ul class="maquina-hero-feats">
+              <li><span class="mh-feat-icon">🛡</span><span><strong>Compra Segura</strong> — estorno automático se o produto não for entregue</span></li>
+              <li><span class="mh-feat-icon">📡</span><span><strong>Telemetria em tempo real</strong> — você acompanha vendas e estoque pelo celular</span></li>
+              <li><span class="mh-feat-icon">💳</span><span><strong>Multipagamento</strong> — Pix, cartão, crédito, NFC, QR Code</span></li>
+              <li><span class="mh-feat-icon">🕒</span><span><strong>24/7 sem atendente</strong> — sem fila, sem caixa, sem hora de almoço. Abastecimento centralizado em rota planejada (1 abastecedor cobre até 10 máquinas).</span></li>
+            </ul>
+          </div>
+          <figure class="maquina-hero-figure">
+            <div class="maquina-hero-glow" aria-hidden="true"></div>
+            <picture>
+              <source srcset="assets/maquina-avend.webp" type="image/webp" />
+              <img src="assets/maquina-avend.png"
+                   alt="Vending Machine AVEND — modelo padrão da rede"
+                   class="maquina-hero-img"
+                   loading="lazy" />
+            </picture>
+            <figcaption class="maquina-hero-caption">Modelo padrão · snack + bebida</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- VÍDEOS -->
+      <div class="rede-block card">
+        <header class="rede-block-head">
+          <span class="rede-block-icon" aria-hidden="true">🎥</span>
+          <div>
+            <h3 class="card-title">Vídeos</h3>
+            <p class="rede-block-sub">Conteúdos da rede AVEND.</p>
+          </div>
+        </header>
+
+        <div class="video-grid">
+          <article class="video-card">
+            <div class="video-thumb">
+              <iframe
+                src="https://www.youtube.com/embed/SivxAPwhlj8"
+                title="Vídeo AVEND"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+              <span class="video-watermark" aria-hidden="true">
+                <img src="assets/logo-mark.webp" alt="" />
+              </span>
+            </div>
+          </article>
+          <article class="video-card video-card-short">
+            <div class="video-thumb">
+              <iframe
+                src="https://www.youtube.com/embed/wvIGN1OzPgU"
+                title="Vídeo AVEND"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+              <span class="video-watermark" aria-hidden="true">
+                <img src="assets/logo-mark.webp" alt="" />
+              </span>
+            </div>
+          </article>
+          <article class="video-card">
+            <div class="video-thumb">
+              <iframe
+                src="https://www.youtube.com/embed/RKWmnZphRnw"
+                title="Vídeo AVEND"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+              <span class="video-watermark" aria-hidden="true">
+                <img src="assets/logo-mark.webp" alt="" />
+              </span>
+            </div>
+          </article>
+          <article class="video-card video-card-short">
+            <div class="video-thumb">
+              <iframe
+                src="https://www.youtube.com/embed/uPd9p7FTU60"
+                title="Vídeo AVEND"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+              <span class="video-watermark" aria-hidden="true">
+                <img src="assets/logo-mark.webp" alt="" />
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- AVEND NA MÍDIA -->
+      <div class="rede-block card midia-block">
+        <header class="rede-block-head">
+          <span class="rede-block-icon" aria-hidden="true">📰</span>
+          <div>
+            <h3 class="card-title">AVEND na Mídia</h3>
+            <p class="rede-block-sub">A AVEND foi destaque em alguns dos principais veículos de negócios e franquias do Brasil.</p>
+          </div>
+        </header>
+
+        <div class="midia-grid">
+          <a class="midia-card midia-card-hl" href="https://exame.com/negocios/jovem-fatura-r-20-mi-com-vending-machines-demorei-para-confiar-no-simples/" target="_blank" rel="noopener">
+            <span class="midia-pill midia-pill-hl">Destaque</span>
+            <span class="midia-veiculo">EXAME</span>
+            <span class="midia-titulo">“Jovem fatura R$ 20 mi com vending machines: ‘demorei para confiar no Simples’”</span>
+            <span class="midia-resumo">Trajetória da marca e seus resultados no mercado de vending machines.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://revistapegn.globo.com/franquias/noticia/2026/04/ele-transformou-uma-renda-extra-em-rede-de-franquias-de-vending-machines-que-fatura-r-20-milhoes.ghtml" target="_blank" rel="noopener">
+            <span class="midia-veiculo">PEGN · Globo</span>
+            <span class="midia-titulo">“Ele transformou uma renda extra em rede de franquias que fatura R$ 20 milhões”</span>
+            <span class="midia-resumo">Reportagem sobre franquias acessíveis e oportunidades para empreender em 2026.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://www.portaldofranchising.com.br/noticias/microfranquia-para-sair-da-clt/" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Portal do Franchising</span>
+            <span class="midia-titulo">Microfranquia para sair da CLT</span>
+            <span class="midia-resumo">Crescimento das microfranquias e alternativas para quem busca empreender.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://mapadasfranquias.com.br/noticia/empreendedorismo-acessivel-abre-caminho-para-sair-da-clt-com-modelos-de-baixo-investimento/" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Mapa das Franquias</span>
+            <span class="midia-titulo">Empreendedorismo acessível abre caminho para sair da CLT</span>
+            <span class="midia-resumo">Empreendedorismo acessível e franquias de baixo investimento.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://economiasa.com.br/blog/empreendedorismo-acessivel-abre-caminho-para-sair-da-clt-com-modelos-de-baixo-investimento/" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Economia S/A</span>
+            <span class="midia-titulo">A força do empreendedorismo acessível</span>
+            <span class="midia-resumo">A ascensão de modelos automatizados no franchising brasileiro.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://n4news.com.br/empreendedorismo-acessivel-amplia-alternativas-para-quem-busca-sair-da-clt/" target="_blank" rel="noopener">
+            <span class="midia-veiculo">N4 News</span>
+            <span class="midia-titulo">Microfranquias e independência financeira</span>
+            <span class="midia-resumo">Modelos enxutos e escaláveis para quem busca sair da CLT.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://afinamenina.com.br/2026/02/08/empreendedorismo-acessivel-como-microfranquias-e-varejo-automatizado-transformam-o-mercado/" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Afina Menina</span>
+            <span class="midia-titulo">Microfranquias e varejo automatizado transformam o mercado</span>
+            <span class="midia-resumo">Tendência crescente do setor de varejo automatizado.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://www.diariodaregiao.com.br/opiniao/artigos/revoluc-o-silenciosa-1.2059692" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Diário da Região</span>
+            <span class="midia-titulo">A revolução silenciosa das vending machines</span>
+            <span class="midia-resumo">Artigo sobre a transformação do varejo automatizado.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="midia-card" href="https://www.diariodaregiao.com.br/economia/neg%C3%B3cios-em-pauta/empresa-rio-pretense-de-maquinas-de-vendas-projeta-crescimento-de-150-em-2025-1.2056722" target="_blank" rel="noopener">
+            <span class="midia-veiculo">Diário da Região</span>
+            <span class="midia-titulo">Empresa rio-pretense projeta crescimento de 150% em 2025</span>
+            <span class="midia-resumo">Projeção de crescimento da AVEND no mercado de máquinas de vendas.</span>
+            <span class="midia-cta">Ler matéria <span aria-hidden="true">→</span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- DÚVIDAS / FAQ -->
+    <section class="page" id="faq">
+      <header class="page-head">
+        <h2 class="page-title">
+          Dúvidas frequentes
+        </h2>
+        <p class="page-sub">
+          Resposta direta às perguntas mais comuns de quem está avaliando a franquia AVEND.
+        </p>
+      </header>
+
+      <div class="faq-cat">
+        <h3 class="faq-cat-title">Sobre &amp; Investimento</h3>
+
+        <details class="faq-item">
+          <summary>O que é a AVEND e qual o diferencial da franquia?</summary>
+          <div class="faq-body">
+            <p>
+              A AVEND é uma rede de varejo automatizado focada na <strong>gestão inteligente de pontos
+              de venda</strong> através de vending machines. O diferencial não é apenas a máquina, mas
+              um modelo de negócio validado por <strong>mais de 10 anos de operação</strong>, com foco
+              em seleção estratégica de pontos, padronização de processos e suporte contínuo
+              para o franqueado.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Qual o investimento total para ter uma franquia AVEND?</summary>
+          <div class="faq-body">
+            <p>O investimento inicial para a 1ª unidade é de <strong>R$ 55.000,00</strong>:</p>
+            <ul>
+              <li>R$ 10.000,00 — Taxa de Franquia</li>
+              <li>R$ 45.000,00 — Vending Machine</li>
+            </ul>
+            <p>
+              Para máquinas adicionais, franqueados ativos podem acessar a modalidade de incentivo
+              <strong>BOM FRANQUEADO</strong>, com a Vending Machine a partir de
+              <strong>R$ 35.000,00</strong> (sem nova taxa de franquia).
+            </p>
+            <p class="faq-note">
+              Custos de transporte, estoque inicial e acessórios variam conforme localidade e podem
+              ser planejados separadamente.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Quais são os custos recorrentes da franquia?</summary>
+          <div class="faq-body">
+            <ul>
+              <li><strong>Royalties</strong> — 5% do faturamento bruto, com piso de
+                <strong>R$ 250,00</strong> quando o faturamento mensal for inferior a R$ 5.000</li>
+              <li><strong>FNP (Fundo Nacional de Propaganda)</strong> — R$ 100,00 por máquina/mês</li>
+              <li><strong>Software de telemetria/pagamento</strong> — ~R$ 95,00/mês, pago direto ao
+                fornecedor homologado</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="faq-cat">
+        <h3 class="faq-cat-title">Operação no dia a dia</h3>
+
+        <details class="faq-item">
+          <summary>A AVEND ajuda na escolha do ponto comercial?</summary>
+          <div class="faq-body">
+            <p>
+              Sim. Oferecemos orientação estratégica e ferramentas de geolocalização para auxiliar
+              na identificação de pontos com alto potencial. Contudo, <strong>a prospecção, negociação
+              e formalização da parceria com o estabelecimento são responsabilidades do franqueado</strong>,
+              com nosso suporte contínuo.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Preciso ter experiência no setor de vending machines?</summary>
+          <div class="faq-body">
+            <p>
+              Não. O programa de treinamento (~40h) e os manuais operacionais são projetados para
+              capacitar o franqueado em todos os aspectos do negócio, da gestão da máquina às
+              estratégias de vendas.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Qual o tempo de dedicação necessário?</summary>
+          <div class="faq-body">
+            <p>
+              O modelo permite gestão flexível — operação integral ou renda complementar.
+              <strong>Mas exige envolvimento ativo</strong> do franqueado na operação e administração
+              para garantir o sucesso e a otimização dos resultados.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Como funciona o suporte técnico e operacional?</summary>
+          <div class="faq-body">
+            <p>
+              Acesso a sistema de telemetria com monitoramento em tempo real e canal de suporte via
+              sistema para assistência técnica e operacional. Manuais e treinamentos cobrem a maior
+              parte das questões — você opera com autonomia.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="faq-cat">
+        <h3 class="faq-cat-title">Crescimento, saída e riscos</h3>
+
+        <details class="faq-item">
+          <summary>Posso ter outras máquinas ou expandir minha operação?</summary>
+          <div class="faq-body">
+            <p>
+              Sim, o crescimento é incentivado. Você terá <strong>direito de preferência</strong> para
+              adquirir máquinas adicionais no mesmo estabelecimento onde já opera, com preço de rede
+              (modalidade <strong>BOM FRANQUEADO</strong>, sem nova taxa de franquia).
+            </p>
+            <p>
+              Para novas unidades em outros locais, novo contrato de franquia e taxa de franquia são
+              necessários, sujeitos à aprovação da franqueadora.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>O que acontece se eu quiser vender minha franquia?</summary>
+          <div class="faq-body">
+            <p>
+              A transferência da unidade é possível mediante <strong>aprovação do novo franqueado pela
+              AVEND</strong> e pagamento de taxa de transferência (equivalente a 1× taxa de franquia
+              vigente). Em caso de rescisão antecipada, há multas contratuais aplicáveis previstas
+              na COF.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>A AVEND garante algum faturamento ou lucro?</summary>
+          <div class="faq-body">
+            <p>
+              <strong>Não.</strong> Conforme a Lei de Franquias, não é possível garantir resultados
+              financeiros específicos. O sucesso do empreendimento está diretamente relacionado ao
+              seu esforço, dedicação e à escolha estratégica dos pontos, com o suporte e know-how
+              da AVEND.
+            </p>
+            <p class="faq-note">
+              Os números do simulador refletem médias observadas na rede em condições específicas
+              e servem como referência, não como promessa de resultado.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-row">
+      <span>© 2026 AVEND Franchising · Business Plan Interativo</span>
+      <span class="footer-ver">v1.0 · Cenário oficial do Deck</span>
+    </div>
+    <div class="footer-legal">
+      As projeções deste simulador são <strong>ilustrativas</strong> e baseadas em médias da rede AVEND.
+      <strong>Não constituem promessa de resultado</strong>. Cada operação varia conforme ponto, perfil
+      do franqueado e execução. Os termos vinculantes da relação franqueador-franqueado estão na
+      Circular de Oferta de Franquia (COF), entregue com no mínimo 10 dias de antecedência conforme
+      Lei 13.966/2019.
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       QUIZ — Diagnóstico de Investidor
+       Aparece automaticamente na 1ª visita ou via CTA na hero.
+       ============================================================ -->
+  <div id="quiz-overlay" class="quiz-overlay" hidden aria-hidden="true">
+    <div class="quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-q-title">
+      <header class="quiz-header">
+        <div class="quiz-brand-row">
+          <img src="assets/logo-mark.webp" alt="" class="quiz-brand-icon" />
+          <div>
+            <span class="quiz-brand-name">AVEND</span>
+            <span class="quiz-brand-tag">Diagnóstico Personalizado · obrigatório</span>
+          </div>
+        </div>
+        <span class="quiz-required-badge" aria-hidden="true" title="Necessário pra acessar o conteúdo">
+          🔒 Obrigatório
+        </span>
+      </header>
+
+      <div class="quiz-progress">
+        <span class="quiz-progress-label">
+          Pergunta <strong id="quiz-cur">1</strong> de <strong id="quiz-tot">7</strong>
+        </span>
+        <div class="quiz-progress-track">
+          <span class="quiz-progress-fill" id="quiz-fill"></span>
+        </div>
+      </div>
+
+      <div class="quiz-stage" id="quiz-stage" aria-live="polite">
+        <!-- Slide ativo gerado dinamicamente -->
+      </div>
+
+      <footer class="quiz-footer">
+        <button class="quiz-nav quiz-nav-back" id="quiz-back" type="button" disabled>
+          <span aria-hidden="true">←</span> Voltar
+        </button>
+        <span class="quiz-foot-hint" id="quiz-hint">Selecione uma opção para continuar</span>
+        <button class="quiz-nav quiz-nav-next" id="quiz-next" type="button" disabled>
+          Próxima <span aria-hidden="true">→</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal de Resultado -->
+  <div id="quiz-result" class="quiz-result-overlay" hidden aria-hidden="true">
+    <div class="quiz-result-modal" id="quiz-result-modal" role="dialog" aria-modal="true">
+
+      <header class="quiz-result-head">
+        <span class="quiz-result-eyebrow">SEU PERFIL DE INVESTIDOR</span>
+        <div class="quiz-result-avatar" id="quiz-result-emoji">🌱</div>
+        <h2 class="quiz-result-title" id="quiz-result-label">—</h2>
+        <p class="quiz-result-desc" id="quiz-result-desc">—</p>
+      </header>
+
+      <section class="quiz-result-section">
+        <header class="qr-section-head">
+          <span class="qr-section-num">01</span>
+          <h3 class="qr-section-title">Plano sugerido</h3>
+        </header>
+        <p class="qr-section-sub">Parâmetros calibrados a partir das suas respostas — você poderá ajustar depois.</p>
+        <div class="quiz-result-params" id="quiz-result-params"></div>
+      </section>
+
+      <section class="quiz-result-section">
+        <header class="qr-section-head">
+          <span class="qr-section-num">02</span>
+          <h3 class="qr-section-title">Projeção pra você</h3>
+        </header>
+        <p class="qr-section-sub">O que esse plano entrega no horizonte definido.</p>
+        <div class="quiz-result-projection" id="quiz-result-projection"></div>
+      </section>
+
+      <section class="quiz-result-section qr-section-market" id="qr-section-market" hidden>
+        <header class="qr-section-head">
+          <span class="qr-section-num">03</span>
+          <h3 class="qr-section-title">Sua cidade está pronta?</h3>
+        </header>
+        <p class="qr-section-sub">Diagnóstico de mercado e mapeamento de território — gerado a partir da cidade que você informou.</p>
+        <div class="market-territory-wrap" id="market-territory-wrap"></div>
+      </section>
+
+      <section class="quiz-result-section">
+        <header class="qr-section-head">
+          <span class="qr-section-num" id="qr-rationale-num">04</span>
+          <h3 class="qr-section-title">Por que esse plano?</h3>
+        </header>
+        <p class="qr-section-sub">A lógica por trás de cada calibração.</p>
+        <ul class="quiz-result-rationale" id="quiz-result-rationale"></ul>
+      </section>
+
+      <footer class="quiz-result-foot">
+        <button class="quiz-result-action quiz-result-whatsapp" id="quiz-whatsapp" type="button" hidden>
+          <span class="qr-wa-icon" aria-hidden="true">💬</span>
+          <span class="qr-wa-text">
+            <span class="qr-wa-title">Quero conversar com a AVEND</span>
+            <span class="qr-wa-sub">Falar com nosso time agora pelo WhatsApp</span>
+          </span>
+          <span class="qr-wa-arrow" aria-hidden="true">→</span>
+        </button>
+        <div class="quiz-result-actions">
+          <button class="quiz-result-action quiz-result-secondary" id="quiz-redo" type="button">
+            <span aria-hidden="true">↺</span> Refazer questionário
+          </button>
+          <button class="quiz-result-action quiz-result-primary" id="quiz-apply" type="button">
+            Simular esse plano <span aria-hidden="true">→</span>
+          </button>
+        </div>
+        <p class="quiz-result-note">
+          Você poderá ajustar todos os parâmetros depois — esse é seu ponto de partida.
+        </p>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ==================== ⌘K PALETTE ==================== -->
+  <div id="cmdk-overlay" class="cmdk-overlay" hidden aria-hidden="true">
+    <div class="cmdk-modal" role="dialog" aria-modal="true" aria-labelledby="cmdk-title">
+      <div class="cmdk-input-wrap">
+        <span class="cmdk-input-icon" aria-hidden="true">⌘</span>
+        <input type="text" id="cmdk-input" class="cmdk-input"
+               placeholder="O que você quer fazer? (digite ou navegue ↑↓)"
+               autocomplete="off" spellcheck="false"
+               aria-label="Buscar comando" />
+        <button type="button" id="cmdk-close" class="cmdk-close" aria-label="Fechar">esc</button>
+      </div>
+      <ul id="cmdk-list" class="cmdk-list" role="listbox" aria-label="Comandos"></ul>
+      <div class="cmdk-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navegar</span>
+        <span><kbd>↵</kbd> executar</span>
+        <span><kbd>esc</kbd> fechar</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STICKY CTA mobile ==================== -->
+  <button type="button" class="sticky-cta" id="sticky-cta" aria-label="Abrir diagnóstico personalizado">
+    <span aria-hidden="true">🎯</span>
+    <span>Diagnóstico Personalizado · 2 min</span>
+    <span aria-hidden="true">→</span>
+  </button>
+
+  <!-- ==================== TOUR GUIADO (60s, primeira visita) ==================== -->
+  <div id="tour-overlay" class="tour-overlay" hidden aria-hidden="true">
+    <div class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+      <button type="button" class="tour-close" id="tour-close" aria-label="Fechar tour">&times;</button>
+      <div class="tour-progress">
+        <span class="tour-progress-bar" id="tour-progress-bar"></span>
+      </div>
+      <div class="tour-step-meta">
+        <span class="tour-step-num" id="tour-step-num">1</span>
+        <span class="tour-step-total">de <strong id="tour-step-total">5</strong></span>
+        <span class="tour-step-time" id="tour-step-time">⏱ ~60s no total</span>
+      </div>
+      <div class="tour-icon" id="tour-icon" aria-hidden="true">👋</div>
+      <h2 class="tour-title" id="tour-title">Bem-vindo ao plano AVEND</h2>
+      <p class="tour-body" id="tour-body">Em 60 segundos, vou te mostrar o que tem aqui dentro.</p>
+      <div class="tour-actions">
+        <button type="button" class="tour-btn tour-btn-skip" id="tour-skip">Pular</button>
+        <button type="button" class="tour-btn tour-btn-next" id="tour-next">
+          <span id="tour-next-label">Começar</span> <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="cities-data.js?v=32" defer></script>
+  <script src="market-territory.js?v=33" defer></script>
+  <script src="live-pulse.js?v=31" defer></script>
+  <script src="app.js?v=32" defer></script>
+</body>
+</html>
