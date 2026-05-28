@@ -1,0 +1,281 @@
+/* ============================================================
+   MODO FEIRA - OTIMIZAÇÕES PARA ATENDIMENTO PRESENCIAL
+   ============================================================ */
+
+.feira-mode {
+  --bg-0: #ffffff;
+  --bg-1: #f8f9fa;
+  --bg-2: #ffffff;
+  --surface: rgba(0, 0, 0, 0.02);
+  --surface-hi: rgba(0, 0, 0, 0.05);
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hi: rgba(0, 0, 0, 0.15);
+  --text: #1a1a1a;
+  --text-main: #1a1a1a;
+  --text-dim: #666666;
+  --text-mute: #999999;
+}
+
+.feira-mode .topbar {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+.feira-mode .nav-group {
+  background: transparent;
+  color: var(--text);
+}
+
+.feira-mode .nav-group.active {
+  background: var(--accent-cyan);
+  color: white;
+}
+
+/* Tela de apresentação rápida */
+.feira-presentation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feira-presentation-inner {
+  text-align: center;
+  color: white;
+  max-width: 600px;
+  padding: 40px 20px;
+}
+
+.feira-presentation-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 30px;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+}
+
+.feira-presentation-title {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.feira-presentation-subtitle {
+  font-size: 20px;
+  margin-bottom: 50px;
+  opacity: 0.9;
+}
+
+.feira-quick-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 50px;
+  gap: 30px;
+}
+
+.quick-stat {
+  text-align: center;
+}
+
+.stat-number {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feira-differentiators {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 50px;
+  gap: 20px;
+}
+
+.diff-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.diff-icon {
+  font-size: 24px;
+}
+
+.diff-text {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.feira-presentation-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.btn-large {
+  padding: 18px 40px;
+  font-size: 18px;
+  border-radius: 50px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+  min-width: 250px;
+}
+
+.btn-primary {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background: white;
+  color: #667eea;
+}
+
+.feira-consultant-contact {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.feira-consultant-contact p {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+  background: #128c7e;
+  transform: translateY(-1px);
+}
+
+/* Botão de reset para atendentes */
+.btn-reset {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 10000 !important;
+  background: #ff6b6b !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
+}
+
+.btn-reset:hover {
+  background: #ff5252 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4) !important;
+}
+
+/* Simulador otimizado para feira */
+.feira-mode .simulator-controls {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.feira-mode .slider {
+  height: 8px;
+}
+
+.feira-mode .slider-thumb {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.feira-mode .kpi-value {
+  font-size: 32px;
+}
+
+/* Touch otimizado */
+@media (hover: none) and (pointer: coarse) {
+  .feira-mode button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .feira-mode .slider {
+    height: 12px;
+  }
+
+  .feira-mode .slider-thumb {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Responsividade para tablets */
+@media (max-width: 768px) {
+  .feira-presentation-title {
+    font-size: 36px;
+  }
+
+  .feira-quick-stats {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .feira-differentiators {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .feira-presentation-cta {
+    flex-direction: column;
+  }
+
+  .btn-large {
+    min-width: 200px;
+  }
+}

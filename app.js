@@ -34,7 +34,7 @@ const MODEL = {
 
   /* CAPEX de aquisição (R$) */
   custoPrimeiraMaquina: 55000,       // franquia + 1ª máquina
-  custoMaquinaAdicional: 35000,      // máquinas seguintes
+  custoMaquinaAdicional: 23990,      // máquinas seguintes
   custoFreteNova: 2000,              // frete de instalação
   custoAbastecimentoInicial: 1500,   // estoque + setup inicial
 
