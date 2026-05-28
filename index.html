@@ -129,8 +129,7 @@
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css?v=37" />
-  <link rel="stylesheet" href="feira-mode.css?v=1" />
-  <link rel="stylesheet" href="feira-elements.css?v=1" />
+  <link rel="stylesheet" href="feira-mode.css?v=2" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
           integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
           crossorigin="anonymous"
@@ -141,61 +140,6 @@
     <span class="orb orb-1"></span>
     <span class="orb orb-2"></span>
     <span class="orb orb-3"></span>
-  </div>
-
-  <!-- ==================== TELA DE APRESENTAÇÃO RÁPIDA - MODO FEIRA ==================== -->
-  <div id="feira-presentation" class="feira-presentation" style="display: none;">
-    <div class="feira-presentation-inner">
-      <img class="feira-presentation-logo" src="assets/logo-full.png" alt="AVEND" />
-      <h1 class="feira-presentation-title">AVEND Franquia</h1>
-      <p class="feira-presentation-subtitle">Varejo Automatizado · Vending Machines</p>
-
-      <div class="feira-quick-stats">
-        <div class="quick-stat">
-          <div class="stat-number">100+</div>
-          <div class="stat-label">Franqueados</div>
-        </div>
-        <div class="quick-stat">
-          <div class="stat-number">14</div>
-          <div class="stat-label">Estados</div>
-        </div>
-        <div class="quick-stat">
-          <div class="stat-number">12-18</div>
-          <div class="stat-label">meses payback</div>
-        </div>
-      </div>
-
-      <div class="feira-differentiators">
-        <div class="diff-item">
-          <span class="diff-icon">🏢</span>
-          <div class="diff-text">Sem funcionários</div>
-        </div>
-        <div class="diff-item">
-          <span class="diff-icon">🕒</span>
-          <div class="diff-text">24/7 sem parar</div>
-        </div>
-        <div class="diff-item">
-          <span class="diff-icon">📈</span>
-          <div class="diff-text">Scalável rápido</div>
-        </div>
-      </div>
-
-      <div class="feira-presentation-cta">
-        <button class="btn btn-primary btn-large" id="start-diagnosis">
-          🎯 Começar Diagnóstico
-        </button>
-        <button class="btn btn-secondary btn-large" id="skip-presentation">
-          Ver Simulador
-        </button>
-      </div>
-
-      <div class="feira-consultant-contact">
-        <p>Atendente: <strong id="consultant-name">Seu Nome</strong></p>
-        <button class="btn btn-whatsapp" id="contact-consultant">
-          💬 Falar com atendente
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- ==================== SPLASH FEIRA ABF ==================== -->
@@ -1838,73 +1782,11 @@
 
 
 
-  <!-- ==================== BOTÃO WHATSAPP FIXO ==================== -->
-
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
   <script src="cities-data.js?v=32" defer></script>
   <script src="market-territory.js?v=33" defer></script>
   <script src="live-pulse.js?v=31" defer></script>
   <script src="app.js?v=32" defer></script>
-  <script src="feira-mode.js?v=1" defer></script>
-  <script src="config-feira.js?v=1" defer></script>
-
-  <!-- Script de controle para modo feira -->
-  <script>
-    // Controle da tela de apresentação rápida
-    document.addEventListener('DOMContentLoaded', function() {
-      const isFeiraMode = document.documentElement.classList.contains('feira-mode');
-      const presentation = document.getElementById('feira-presentation');
-      const splash = document.getElementById('feira-splash');
-
-      if (isFeiraMode && presentation && splash) {
-        // Esconder splash e mostrar apresentação
-        splash.style.display = 'none';
-        presentation.style.display = 'block';
-
-        // Controles da apresentação
-        const startBtn = document.getElementById('start-diagnosis');
-        const skipBtn = document.getElementById('skip-presentation');
-        const contactBtn = document.getElementById('contact-consultant');
-
-        if (startBtn) {
-          startBtn.addEventListener('click', () => {
-            document.getElementById('open-quiz-hero').click();
-          });
-        }
-
-        if (skipBtn) {
-          skipBtn.addEventListener('click', () => {
-            document.getElementById('simulador').scrollIntoView({ behavior: 'smooth' });
-          });
-        }
-
-        if (contactBtn) {
-          contactBtn.addEventListener('click', () => {
-            const phone = '5517996003377'; // Número do atendente
-            window.open(`https://wa.me/${phone}`, '_blank');
-          });
-        }
-      }
-
-      // Adicionar botão de reset para atendentes
-      if (isFeiraMode) {
-        const resetBtn = document.createElement('button');
-        resetBtn.textContent = '🔄 Resetar para próximo usuário';
-        resetBtn.className = 'btn btn-reset';
-        resetBtn.style.position = 'fixed';
-        resetBtn.style.top = '20px';
-        resetBtn.style.right = '20px';
-        resetBtn.style.zIndex = '9999';
-        resetBtn.style.backgroundColor = '#ff6b6b';
-        resetBtn.style.color = 'white';
-        resetBtn.style.border = 'none';
-        resetBtn.style.padding = '10px 20px';
-        resetBtn.style.borderRadius = '25px';
-        resetBtn.style.cursor = 'pointer';
-        resetBtn.addEventListener('click', resetForNextUser);
-        document.body.appendChild(resetBtn);
-      }
-    });
-  </script>
+  <script src="config-feira.js?v=2" defer></script>
 </body>
 </html>
