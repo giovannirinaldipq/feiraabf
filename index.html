@@ -17,40 +17,27 @@
        • Invalidar TODOS de uma vez: bumpar KEY (v1 → v2 → ...) —
          todo localStorage com versão antiga vira inválido
        ============================================================ -->
-  <!-- Modo Feira - Otimizações para atendimento presencial -->
+  <!-- Modo Feira - Detecção early (antes de qualquer asset) -->
   <script>
-    // Detecta modo feira e aplica otimizações
-    const isFeiraMode = location.search.includes('?feira=true') ||
-                       location.hash.includes('#feira') ||
-                       navigator.userAgent.includes('FeiraABF');
+    // Detecta modo feira
+    var isFeiraMode = location.search.includes('feira=true') ||
+                     location.hash.includes('#feira');
 
     if (isFeiraMode) {
       document.documentElement.classList.add('feira-mode');
-      // Resetar localStorage para novo atendimento
+      // Limpar sessionStorage (dados de navegação) mas PRESERVAR feira-leads no localStorage
       try {
-        localStorage.clear();
         sessionStorage.clear();
+        // Limpar tudo EXCETO backup de leads
+        var leadsBackup = localStorage.getItem('feira-leads');
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+        keys.forEach(function(k) { if (k !== 'feira-leads') localStorage.removeItem(k); });
+        if (leadsBackup) localStorage.setItem('feira-leads', leadsBackup);
       } catch(e) {}
 
-      // Remover telemetria em modo feira
-      window.TELEMETRY = undefined;
-
-      // Pré-carregar recursos essenciais
-      document.addEventListener('DOMContentLoaded', () => {
-        // Forçar renderização rápida
-        document.body.style.display = 'block';
-      });
-    }
-
-    // Função para resetar entre usuários
-    function resetForNextUser() {
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-        location.reload();
-      } catch(e) {
-        location.reload();
-      }
+      // Desativar tour automático
+      try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
     }
   </script>
   <script>
