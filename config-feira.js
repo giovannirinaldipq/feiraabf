@@ -204,7 +204,7 @@
         '</div>' +
         '<div class="feira-field">' +
           '<label for="lead-telefone">WhatsApp</label>' +
-          '<input type="tel" id="lead-telefone" name="phone" required autocomplete="tel" placeholder="(11) 99999-9999" inputmode="tel" />' +
+          '<input type="tel" id="lead-telefone" name="phone" required autocomplete="tel" placeholder="(00) 0 0000-0000" inputmode="tel" maxlength="16" />' +
         '</div>' +
         '<div class="feira-field">' +
           '<label for="lead-cidade">Cidade <span class="feira-optional">(opcional)</span></label>' +
@@ -232,6 +232,20 @@
     '</div>';
 
     updateTimer();
+
+    // Máscara de telefone: (00) 0 0000-0000
+    var telInput = document.getElementById('lead-telefone');
+    telInput.addEventListener('input', function(e) {
+      var v = e.target.value.replace(/\D/g, '');
+      if (v.length > 11) v = v.slice(0, 11);
+      var masked = '';
+      if (v.length > 0) masked = '(' + v.slice(0, 2);
+      if (v.length >= 2) masked += ') ';
+      if (v.length >= 3) masked += v.slice(2, 3) + ' ';
+      if (v.length >= 4) masked += v.slice(3, 7);
+      if (v.length >= 7) masked += '-' + v.slice(7, 11);
+      e.target.value = masked;
+    });
 
     // Termômetro interativo
     var slider = document.getElementById('lead-temp');
