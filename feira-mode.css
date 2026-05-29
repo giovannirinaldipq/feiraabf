@@ -693,7 +693,12 @@
   .feira-termo-slider::-webkit-slider-thumb { width: 32px; height: 32px; }
 }
 
-/* Esconder site principal */
+/* Esconder elementos do site principal */
 .feira-mode .topbar { z-index: 1; }
 .feira-mode .live-pulse { display: none !important; }
 .feira-mode .feira-splash { display: none !important; }
+.feira-mode .topbar-quiz { display: none !important; }
+.feira-mode .btn-quiz { display: none !important; }
+.feira-mode .vsl-cta-quiz { display: none !important; }
+.feira-mode #quiz-overlay { display: none !important; }
+.feira-mode #quiz-result { display: none !important; }
