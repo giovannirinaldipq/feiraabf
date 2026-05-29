@@ -36,6 +36,15 @@
 
     // Desativar tour automático
     try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
+
+    // Esconder botões de diagnóstico imediatamente
+    document.addEventListener('DOMContentLoaded', function() {
+      var hide = ['open-quiz-header', 'open-quiz-hero', 'vsl-quiz'];
+      hide.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    });
   </script>
   <script>
     /* ============================================================

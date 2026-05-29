@@ -697,8 +697,11 @@
 .feira-mode .topbar { z-index: 1; }
 .feira-mode .live-pulse { display: none !important; }
 .feira-mode .feira-splash { display: none !important; }
-.feira-mode .topbar-quiz { display: none !important; }
-.feira-mode .btn-quiz { display: none !important; }
-.feira-mode .vsl-cta-quiz { display: none !important; }
+.feira-mode .topbar-quiz,
+.feira-mode #open-quiz-header { display: none !important; }
+.feira-mode .btn-quiz,
+.feira-mode #open-quiz-hero { display: none !important; }
+.feira-mode .vsl-cta-quiz,
+.feira-mode #vsl-quiz { display: none !important; }
 .feira-mode #quiz-overlay { display: none !important; }
 .feira-mode #quiz-result { display: none !important; }
