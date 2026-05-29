@@ -59,7 +59,7 @@
     } catch(e) {}
 
     injectOverlay();
-    showConsultor();
+    showVitrine();
   });
 
   // ========== OVERLAY ==========
@@ -72,6 +72,46 @@
 
   function getOverlay() {
     return document.getElementById('feira-overlay');
+  }
+
+  // ========== TELA VITRINE (idle — atrai investidor) ==========
+  function showVitrine() {
+    var overlay = getOverlay();
+    overlay.style.display = 'flex';
+    overlay.innerHTML = '<div class="feira-screen feira-screen-vitrine">' +
+      '<div class="feira-vitrine-bg"></div>' +
+      '<div class="feira-vitrine-content">' +
+        '<img class="feira-vitrine-logo" src="assets/logo-full.png" alt="AVEND" />' +
+        '<h1 class="feira-vitrine-title">Franquia de<br><span class="feira-grad">Vending Machines</span></h1>' +
+        '<p class="feira-vitrine-sub">Varejo automatizado · Sem funcionários · Opera 24/7</p>' +
+
+        '<div class="feira-vitrine-kpis">' +
+          '<div class="feira-vitrine-kpi">' +
+            '<div class="feira-vitrine-kpi-val">100+</div>' +
+            '<div class="feira-vitrine-kpi-lbl">Franqueados</div>' +
+          '</div>' +
+          '<div class="feira-vitrine-kpi">' +
+            '<div class="feira-vitrine-kpi-val">14</div>' +
+            '<div class="feira-vitrine-kpi-lbl">Estados</div>' +
+          '</div>' +
+          '<div class="feira-vitrine-kpi">' +
+            '<div class="feira-vitrine-kpi-val">30%+</div>' +
+            '<div class="feira-vitrine-kpi-lbl">Margem líquida</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="feira-vitrine-invest">' +
+          '<span>A partir de <strong>R$ 55.000</strong></span>' +
+        '</div>' +
+
+        '<button class="feira-vitrine-start" id="feira-vitrine-start">' +
+          '<span class="feira-vitrine-start-text">Iniciar Atendimento</span>' +
+          '<span class="feira-vitrine-start-arrow">→</span>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+    document.getElementById('feira-vitrine-start').addEventListener('click', showConsultor);
   }
 
   // ========== TELA 1: CONSULTOR ==========
@@ -382,7 +422,7 @@
     if (timerInterval) clearInterval(timerInterval);
     atendimentoStart = null;
     document.querySelectorAll('.feira-btn-float').forEach(function(el) { el.remove(); });
-    showApresentacao();
+    showVitrine();
   }
 
   // Expor para debug/export
