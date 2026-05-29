@@ -243,7 +243,7 @@ function simulate(params) {
 
 /* ---------- Estado + UI ---------- */
 const state = {
-  faturamentoPorMaquina: 10000,
+  faturamentoPorMaquina: 7500,
   percReinvestFase1: 100,
   duracaoFase1Meses: 48,          // 4 anos em 100%
   percReinvestFase2: 50,          // depois 50% (começa a tirar pró-labore)
