@@ -1,12 +1,6 @@
 /* ============================================================
-   MODO FEIRA ABF 2026 — Controlador único (v3)
-   Ativação: ?feira=true na URL
-
-   Fluxo: 4 telas
-   1. Consultor (1x por turno, com opção de trocar)
-   2. Apresentação + KPIs (impacto visual)
-   3. Captura rápida (nome + WhatsApp)
-   4. QR + Obrigado + Próximo
+   MODO FEIRA ABF 2026 — Controlador único (v4)
+   Fluxo: Consultor > Apresentação > Captura (com termômetro) > QR
    ============================================================ */
 
 (function() {
@@ -20,12 +14,13 @@
     evento: "Feira ABF 2026",
     maxMinutos: 8,
     consultores: [
-      { id: "giovanni", nome: "Giovanni Rinaldi" },
-      { id: "consultor2", nome: "Consultor 2" },
-      { id: "consultor3", nome: "Consultor 3" },
-      { id: "consultor4", nome: "Consultor 4" }
+      { id: "tayrone", nome: "Tayrone Gomes" },
+      { id: "thiago", nome: "Thiago Artibale" },
+      { id: "guilherme-n", nome: "Guilherme Nogueira" },
+      { id: "guilherme-o", nome: "Guilherme Oliveira" },
+      { id: "gabriel", nome: "Gabriel Stuqui" },
+      { id: "jonathan", nome: "Jonathan Xavier" }
     ],
-    // Endpoint do Apps Script (mesmo do telemetry)
     endpoint: "https://script.google.com/macros/s/AKfycbwdC4YKekPo6qliAs1QtbLwBm4zuwh2PPIBOFJC5MTDOSwRgViQFMPbvjZlCnSwUKsB/exec"
   };
 
@@ -35,23 +30,22 @@
 
   // ========== INICIALIZAÇÃO ==========
   document.addEventListener('DOMContentLoaded', function() {
-    // Desativar live-pulse (nome correto do objeto global)
+    // Desativar live-pulse
     if (window.AvendLivePulse && window.AvendLivePulse.pause) {
       window.AvendLivePulse.pause();
     }
-    // Fallback: esconder elemento
     var pulseEl = document.querySelector('.live-pulse');
     if (pulseEl) pulseEl.style.display = 'none';
 
-    // Desativar tour automático
+    // Desativar tour
     try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
 
-    // Esconder splash original do app.js
+    // Esconder splash original
     var splash = document.getElementById('feira-splash');
     if (splash) splash.style.display = 'none';
     document.body.style.overflow = '';
 
-    // Verificar se consultor já foi selecionado neste turno
+    // Verificar consultor salvo neste turno
     try {
       var saved = sessionStorage.getItem('feira-consultor');
       if (saved) {
@@ -62,7 +56,6 @@
       }
     } catch(e) {}
 
-    // Primeira vez: mostrar seleção de consultor
     injectOverlay();
     showConsultor();
   });
@@ -79,7 +72,7 @@
     return document.getElementById('feira-overlay');
   }
 
-  // ========== TELA 1: CONSULTOR (1x por turno) ==========
+  // ========== TELA 1: CONSULTOR ==========
   function showConsultor() {
     var overlay = getOverlay();
     var btns = CONFIG.consultores.map(function(c) {
@@ -95,7 +88,6 @@
 
     overlay.style.display = 'flex';
 
-    // Bind botões
     overlay.querySelectorAll('.feira-consultor-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         consultorAtivo = { id: btn.dataset.id, nome: btn.dataset.nome };
@@ -105,7 +97,7 @@
     });
   }
 
-  // ========== TELA 2: APRESENTAÇÃO + KPIs ==========
+  // ========== TELA 2: APRESENTAÇÃO ==========
   function showApresentacao() {
     atendimentoStart = Date.now();
     startTimer();
@@ -140,7 +132,7 @@
       '</div>' +
 
       '<div class="feira-apres-cta">' +
-        '<button class="feira-btn-primary" id="feira-go-lead">Quero saber mais →</button>' +
+        '<button class="feira-btn-primary" id="feira-go-lead">Cadastrar Lead →</button>' +
         '<button class="feira-btn-secondary" id="feira-go-simulador">Ver Simulador</button>' +
       '</div>' +
 
@@ -155,46 +147,82 @@
     });
   }
 
-  // ========== TELA 3: CAPTURA RÁPIDA (nome + WhatsApp) ==========
+  // ========== TELA 3: CAPTURA DE LEAD + TERMÔMETRO ==========
   function showCapturaLead() {
     var overlay = getOverlay();
     overlay.innerHTML = '<div class="feira-screen feira-screen-lead">' +
       '<div class="feira-timer" id="feira-timer">⏱ --:--</div>' +
       '<img class="feira-logo-sm" src="assets/logo-full.png" alt="AVEND" />' +
-      '<h2 class="feira-lead-title">Receba seu diagnóstico</h2>' +
-      '<p class="feira-lead-sub">Preencha para receber a simulação personalizada no seu WhatsApp</p>' +
+      '<h2 class="feira-lead-title">Cadastrar Lead</h2>' +
 
       '<form class="feira-lead-form" id="feira-lead-form" autocomplete="on">' +
         '<div class="feira-field">' +
           '<label for="lead-nome">Nome</label>' +
-          '<input type="text" id="lead-nome" name="name" required autocomplete="name" placeholder="Seu nome completo" />' +
+          '<input type="text" id="lead-nome" name="name" required autocomplete="name" placeholder="Nome completo" />' +
         '</div>' +
         '<div class="feira-field">' +
           '<label for="lead-telefone">WhatsApp</label>' +
           '<input type="tel" id="lead-telefone" name="phone" required autocomplete="tel" placeholder="(11) 99999-9999" inputmode="tel" />' +
         '</div>' +
-        '<div class="feira-field feira-field-optional">' +
+        '<div class="feira-field">' +
           '<label for="lead-cidade">Cidade <span class="feira-optional">(opcional)</span></label>' +
           '<input type="text" id="lead-cidade" name="city" autocomplete="address-level2" placeholder="Onde pretende operar?" />' +
         '</div>' +
-        '<button type="submit" class="feira-btn-primary feira-btn-submit">Enviar →</button>' +
+
+        '<!-- Termômetro de qualificação -->' +
+        '<div class="feira-termometro">' +
+          '<label class="feira-termo-label">Qualificação do Lead</label>' +
+          '<div class="feira-termo-wrap">' +
+            '<input type="range" id="lead-temp" min="1" max="4" value="2" step="1" class="feira-termo-slider" />' +
+            '<div class="feira-termo-labels">' +
+              '<span data-val="1">❄️ Frio</span>' +
+              '<span data-val="2">🌤 Morno</span>' +
+              '<span data-val="3">🔥 Quente</span>' +
+              '<span data-val="4">🚀 Muito Quente</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="feira-termo-indicator" id="feira-termo-indicator">🌤 Morno</div>' +
+        '</div>' +
+
+        '<button type="submit" class="feira-btn-primary feira-btn-submit">Salvar Lead ✓</button>' +
+        '<button type="button" class="feira-btn-voltar" id="feira-voltar-lead">← Voltar</button>' +
       '</form>' +
     '</div>';
 
     updateTimer();
 
+    // Termômetro interativo
+    var slider = document.getElementById('lead-temp');
+    var indicator = document.getElementById('feira-termo-indicator');
+    var labels = ['', '❄️ Frio', '🌤 Morno', '🔥 Quente', '🚀 Muito Quente'];
+
+    slider.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      indicator.textContent = labels[val];
+      indicator.className = 'feira-termo-indicator feira-termo-' + val;
+    });
+
+    // Botão voltar
+    document.getElementById('feira-voltar-lead').addEventListener('click', function() {
+      showApresentacao();
+    });
+
+    // Submit
     document.getElementById('feira-lead-form').addEventListener('submit', function(e) {
       e.preventDefault();
       var nome = document.getElementById('lead-nome').value.trim();
       var telefone = document.getElementById('lead-telefone').value.trim();
       var cidade = document.getElementById('lead-cidade').value.trim();
+      var temperatura = parseInt(document.getElementById('lead-temp').value);
+      var tempLabels = ['', 'frio', 'morno', 'quente', 'muito_quente'];
 
       if (!nome || !telefone) {
-        document.getElementById('lead-nome').focus();
+        if (!nome) document.getElementById('lead-nome').focus();
+        else document.getElementById('lead-telefone').focus();
         return;
       }
 
-      // Validação básica de telefone BR
+      // Validação telefone BR
       var telLimpo = telefone.replace(/\D/g, '');
       if (telLimpo.length < 10 || telLimpo.length > 13) {
         alert('Telefone inválido. Use formato: (11) 99999-9999');
@@ -206,6 +234,8 @@
         nome: nome,
         telefone: telefone,
         cidade: cidade,
+        temperatura: tempLabels[temperatura],
+        temperaturaNum: temperatura,
         consultor: consultorAtivo.nome,
         consultorId: consultorAtivo.id,
         evento: CONFIG.evento,
@@ -217,31 +247,34 @@
     });
   }
 
-  // ========== TELA 4: ENCERRAMENTO + QR CODE ==========
+  // ========== TELA 4: ENCERRAMENTO ==========
   function showEncerramento(leadData) {
     if (timerInterval) clearInterval(timerInterval);
 
-    // URL útil: simulador com dados do investidor para revisão em casa
     var qrUrl = location.origin + location.pathname +
       '?ref=feira-followup' +
       '&name=' + encodeURIComponent(leadData.nome) +
       '&phone=' + encodeURIComponent(leadData.telefone) +
       (leadData.cidade ? '&city=' + encodeURIComponent(leadData.cidade) : '');
 
+    var tempEmoji = {'frio':'❄️','morno':'🌤','quente':'🔥','muito_quente':'🚀'}[leadData.temperatura] || '';
+
     var overlay = getOverlay();
     overlay.innerHTML = '<div class="feira-screen feira-screen-fim">' +
       '<div class="feira-fim-check">✓</div>' +
-      '<h2 class="feira-fim-title">Obrigado, ' + leadData.nome.split(' ')[0] + '!</h2>' +
-      '<p class="feira-fim-sub">Escaneie para acessar o simulador completo no celular</p>' +
+      '<h2 class="feira-fim-title">Lead salvo!</h2>' +
+      '<p class="feira-fim-nome">' + leadData.nome + '</p>' +
+      '<p class="feira-fim-temp">' + tempEmoji + ' ' + leadData.temperatura.replace('_', ' ') + '</p>' +
+      '<p class="feira-fim-sub">QR Code para o investidor acessar o simulador</p>' +
       '<div class="feira-qr-wrap" id="feira-qr-final"></div>' +
       '<div class="feira-fim-info">' +
-        '<p>Entraremos em contato pelo WhatsApp <strong>' + leadData.telefone + '</strong></p>' +
+        '<p>WhatsApp: <strong>' + leadData.telefone + '</strong></p>' +
         '<p class="feira-fim-consultor">Atendido por: ' + consultorAtivo.nome + '</p>' +
       '</div>' +
       '<button class="feira-btn-proximo" id="feira-proximo">Próximo Investidor →</button>' +
     '</div>';
 
-    // Gerar QR Code
+    // QR Code
     try {
       if (typeof qrcode !== 'undefined') {
         var qrWrap = document.getElementById('feira-qr-final');
@@ -255,33 +288,26 @@
     document.getElementById('feira-proximo').addEventListener('click', proximoInvestidor);
   }
 
-  // ========== SIMULADOR (overlay escondido) ==========
+  // ========== SIMULADOR ==========
   function goToSimulador() {
     var overlay = getOverlay();
     overlay.style.display = 'none';
-
-    // Ativar aba simulador
     if (typeof activateTab === 'function') activateTab('simulador');
-
-    // Botões flutuantes
     addFloatButtons();
   }
 
   function addFloatButtons() {
-    // Remover existentes
     document.querySelectorAll('.feira-btn-float').forEach(function(el) { el.remove(); });
 
-    // Botão captura
     var capturaBtn = document.createElement('button');
     capturaBtn.className = 'feira-btn-float feira-btn-float-lead';
-    capturaBtn.innerHTML = '📋 Capturar Lead';
+    capturaBtn.innerHTML = '📋 Cadastrar Lead';
     capturaBtn.addEventListener('click', function() {
       getOverlay().style.display = 'flex';
       showCapturaLead();
     });
     document.body.appendChild(capturaBtn);
 
-    // Botão próximo
     var nextBtn = document.createElement('button');
     nextBtn.className = 'feira-btn-float feira-btn-float-next';
     nextBtn.innerHTML = '→ Próximo';
@@ -289,8 +315,7 @@
     document.body.appendChild(nextBtn);
   }
 
-  // ========== FUNÇÕES AUXILIARES ==========
-
+  // ========== AUXILIARES ==========
   function startTimer() {
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(updateTimer, 1000);
@@ -311,7 +336,6 @@
   }
 
   function enviarLead(data) {
-    // Formato compatível com o Apps Script existente (Code.gs aceita type: "event")
     var payload = {
       type: 'event',
       session_id: 'feira_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
@@ -322,6 +346,8 @@
           nome: data.nome,
           telefone: data.telefone,
           cidade: data.cidade || '',
+          temperatura: data.temperatura,
+          temperaturaNum: data.temperaturaNum,
           consultor: data.consultor,
           consultorId: data.consultorId,
           evento: data.evento,
@@ -335,17 +361,14 @@
       }
     };
 
-    // Enviar via sendBeacon com text/plain (evita CORS preflight no Apps Script)
     try {
       if (CONFIG.endpoint) {
         var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
         navigator.sendBeacon(CONFIG.endpoint, blob);
       }
-    } catch(e) {
-      console.warn('[feira-send]', e);
-    }
+    } catch(e) { console.warn('[feira-send]', e); }
 
-    // Backup local (preservado entre reloads)
+    // Backup local
     try {
       var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
       leads.push(data);
@@ -356,11 +379,7 @@
   function proximoInvestidor() {
     if (timerInterval) clearInterval(timerInterval);
     atendimentoStart = null;
-
-    // Remover botões flutuantes
     document.querySelectorAll('.feira-btn-float').forEach(function(el) { el.remove(); });
-
-    // Mostrar overlay e ir para apresentação (consultor já selecionado)
     showApresentacao();
   }
 
@@ -371,14 +390,13 @@
     exportLeads: function() {
       var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
       console.table(leads);
-      // Copiar para clipboard
       try {
-        var csv = 'Nome,Telefone,Cidade,Consultor,Timestamp\n' +
+        var csv = 'Nome,Telefone,Cidade,Temperatura,Consultor,Timestamp\n' +
           leads.map(function(l) {
-            return [l.nome, l.telefone, l.cidade, l.consultor, l.timestamp].join(',');
+            return [l.nome, l.telefone, l.cidade, l.temperatura, l.consultor, l.timestamp].join(',');
           }).join('\n');
         navigator.clipboard.writeText(csv);
-        alert('✓ ' + leads.length + ' leads copiados para clipboard (CSV)');
+        alert('✓ ' + leads.length + ' leads copiados (CSV)');
       } catch(e) {
         alert(JSON.stringify(leads, null, 2));
       }

@@ -1,73 +1,67 @@
 /* ============================================================
-   MODO FEIRA ABF 2026 — CSS (v3)
-   Otimizado para: iPad 10.2", tablets Android 10", zero scroll
+   MODO FEIRA ABF 2026 — CSS (v4)
+   Zero scroll, tablet-first, touch-optimized
    ============================================================ */
 
-/* Overlay principal — cobre tudo */
+/* Overlay */
 .feira-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background: linear-gradient(160deg, #0a0b1e 0%, #141538 40%, #1e1054 100%);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; /* ZERO scroll */
+  overflow: hidden;
 }
 
-/* Telas genéricas */
+/* Telas */
 .feira-screen {
   text-align: center;
   color: #f0f2ff;
   width: 100%;
-  max-width: 640px;
-  padding: 24px;
-  animation: feiraFadeIn 0.25s ease;
+  max-width: 580px;
+  padding: 20px;
+  animation: feiraFadeIn 0.2s ease;
   position: relative;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes feiraFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Logos */
-.feira-logo {
-  width: 80px;
-  height: auto;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 4px 12px rgba(0,229,208,0.25));
-}
-
-.feira-logo-sm {
-  width: 48px;
-  height: auto;
-  margin-bottom: 12px;
-}
+.feira-logo { width: 72px; height: auto; margin-bottom: 16px; }
+.feira-logo-sm { width: 40px; height: auto; margin-bottom: 8px; }
 
 /* Títulos */
 .feira-screen-title {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-
 .feira-screen-sub {
-  font-size: 15px;
+  font-size: 14px;
   opacity: 0.6;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
-/* ========== TELA 1: CONSULTOR ========== */
+/* ===== TELA 1: CONSULTOR ===== */
 .feira-consultor-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 380px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 440px;
   margin: 0 auto;
 }
 
@@ -75,50 +69,46 @@
   background: rgba(255,255,255,0.06);
   border: 2px solid rgba(255,255,255,0.12);
   color: white;
-  padding: 18px 28px;
-  border-radius: 14px;
-  font-size: 17px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 60px;
+  min-height: 56px;
 }
-
 .feira-consultor-btn:active {
   background: rgba(0,229,208,0.15);
   border-color: #00E5D0;
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* ========== TELA 2: APRESENTAÇÃO ========== */
+/* ===== TELA 2: APRESENTAÇÃO ===== */
 .feira-header-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
-
 .feira-badge {
   background: rgba(0,229,208,0.12);
   border: 1px solid rgba(0,229,208,0.3);
   color: #00E5D0;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
 .feira-apres-title {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 20px;
-  line-height: 1.2;
+  margin-bottom: 16px;
+  line-height: 1.15;
 }
-
 .feira-grad {
   background: linear-gradient(135deg, #00E5D0, #5B7FFF);
   -webkit-background-clip: text;
@@ -129,74 +119,63 @@
 .feira-kpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
-
 .feira-kpi {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 14px 8px;
+  border-radius: 10px;
+  padding: 12px 6px;
 }
-
 .feira-kpi-val {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #00E5D0;
-  margin-bottom: 2px;
 }
-
 .feira-kpi-lbl {
-  font-size: 11px;
+  font-size: 10px;
   opacity: 0.6;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  margin-top: 2px;
 }
 
 .feira-diffs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
-
 .feira-diff {
   background: rgba(255,255,255,0.04);
-  border-radius: 10px;
-  padding: 10px 8px;
-  font-size: 13px;
+  border-radius: 8px;
+  padding: 8px 4px;
+  font-size: 12px;
   font-weight: 500;
 }
 
 .feira-investimentos {
   background: rgba(0,229,208,0.06);
   border: 1px solid rgba(0,229,208,0.15);
-  border-radius: 14px;
-  padding: 14px 20px;
-  margin-bottom: 20px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
 }
-
 .feira-invest-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 5px 0;
 }
-
 .feira-invest-item + .feira-invest-item {
   border-top: 1px solid rgba(255,255,255,0.08);
 }
-
-.feira-invest-label {
-  font-size: 14px;
-  opacity: 0.7;
-}
-
+.feira-invest-label { font-size: 13px; opacity: 0.7; }
 .feira-invest-val {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #00E5D0;
 }
@@ -208,311 +187,337 @@
 
 .feira-btn-trocar {
   position: absolute;
-  bottom: 12px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   background: none;
   border: none;
-  color: rgba(255,255,255,0.4);
-  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
   cursor: pointer;
   padding: 8px 16px;
 }
 
-.feira-btn-trocar:active {
-  color: rgba(255,255,255,0.8);
-}
-
-/* ========== TELA 3: CAPTURA DE LEAD ========== */
+/* ===== TELA 3: CAPTURA + TERMÔMETRO ===== */
 .feira-lead-title {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 16px;
   color: #00E5D0;
-}
-
-.feira-lead-sub {
-  font-size: 14px;
-  opacity: 0.6;
-  margin-bottom: 24px;
 }
 
 .feira-lead-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   max-width: 400px;
   margin: 0 auto;
 }
-
-.feira-field {
-  text-align: left;
-}
-
+.feira-field { text-align: left; }
 .feira-field label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.6;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
-
-.feira-optional {
-  opacity: 0.5;
-  text-transform: none;
-  font-weight: 400;
-}
-
+.feira-optional { opacity: 0.5; text-transform: none; font-weight: 400; }
 .feira-field input {
   width: 100%;
-  padding: 16px 18px;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
   border: 2px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.05);
   color: white;
-  font-size: 17px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.15s;
   -webkit-appearance: none;
 }
-
 .feira-field input:focus {
   border-color: #00E5D0;
   background: rgba(0,229,208,0.04);
 }
+.feira-field input::placeholder { color: rgba(255,255,255,0.3); }
 
-.feira-field input::placeholder {
-  color: rgba(255,255,255,0.3);
+/* Termômetro */
+.feira-termometro {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
 }
-
-.feira-field-optional {
-  opacity: 0.8;
+.feira-termo-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  margin-bottom: 10px;
 }
+.feira-termo-wrap {
+  position: relative;
+}
+.feira-termo-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 33%, #F59E0B 66%, #EF4444 100%);
+  outline: none;
+  cursor: pointer;
+}
+.feira-termo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #00E5D0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+.feira-termo-slider::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #00E5D0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+.feira-termo-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: 0.5;
+}
+.feira-termo-indicator {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+}
+.feira-termo-1 { color: #3B82F6; }
+.feira-termo-2 { color: #10B981; }
+.feira-termo-3 { color: #F59E0B; }
+.feira-termo-4 { color: #EF4444; }
 
-.feira-btn-submit {
+/* Botão voltar */
+.feira-btn-voltar {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 10px;
   margin-top: 4px;
 }
+.feira-btn-voltar:active { color: rgba(255,255,255,0.8); }
 
-/* ========== TELA 4: ENCERRAMENTO ========== */
+/* ===== TELA 4: ENCERRAMENTO ===== */
 .feira-fim-check {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, #00E5D0, #34D399);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 24px;
   color: #0a0b1e;
   font-weight: 700;
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
 }
-
 .feira-fim-title {
   font-family: "Clash Display", system-ui, sans-serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-
-.feira-fim-sub {
+.feira-fim-nome {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.feira-fim-temp {
   font-size: 14px;
-  opacity: 0.6;
-  margin-bottom: 20px;
+  opacity: 0.7;
+  margin-bottom: 12px;
 }
-
+.feira-fim-sub {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
 .feira-qr-wrap {
   background: white;
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 16px;
   display: inline-block;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  margin-bottom: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
 }
-
-.feira-qr-wrap svg {
-  display: block;
-}
-
+.feira-qr-wrap svg { display: block; }
 .feira-fim-info {
   background: rgba(255,255,255,0.05);
-  border-radius: 10px;
-  padding: 14px 20px;
-  margin-bottom: 24px;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
   font-size: 13px;
   opacity: 0.7;
 }
-
-.feira-fim-info p {
-  margin: 3px 0;
-}
-
-.feira-fim-consultor {
-  opacity: 0.6;
-  font-size: 12px;
-}
+.feira-fim-info p { margin: 2px 0; }
+.feira-fim-consultor { opacity: 0.6; font-size: 11px; }
 
 .feira-btn-proximo {
   background: rgba(255,255,255,0.08);
   border: 2px solid rgba(255,255,255,0.15);
   color: white;
-  padding: 16px 36px;
+  padding: 14px 32px;
   border-radius: 50px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 52px;
+  min-height: 48px;
 }
-
 .feira-btn-proximo:active {
   background: rgba(255,255,255,0.15);
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-/* ========== BOTÕES GLOBAIS ========== */
+/* ===== BOTÕES GLOBAIS ===== */
 .feira-btn-primary {
   background: linear-gradient(135deg, #00E5D0, #5B7FFF);
   color: white;
   border: none;
-  padding: 16px 32px;
+  padding: 14px 28px;
   border-radius: 50px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 52px;
+  min-height: 48px;
   flex: 1;
 }
-
-.feira-btn-primary:active {
-  transform: scale(0.97);
-  opacity: 0.9;
-}
+.feira-btn-primary:active { transform: scale(0.97); opacity: 0.9; }
 
 .feira-btn-secondary {
   background: transparent;
   color: white;
   border: 2px solid rgba(255,255,255,0.15);
-  padding: 16px 32px;
+  padding: 14px 28px;
   border-radius: 50px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 52px;
+  min-height: 48px;
   flex: 1;
 }
+.feira-btn-secondary:active { background: rgba(255,255,255,0.06); }
 
-.feira-btn-secondary:active {
-  background: rgba(255,255,255,0.06);
-}
-
-/* ========== BOTÕES FLUTUANTES (simulador aberto) ========== */
+/* Flutuantes */
 .feira-btn-float {
   position: fixed;
   z-index: 9000;
   border: none;
-  padding: 14px 22px;
+  padding: 14px 20px;
   border-radius: 50px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
-  transition: all 0.15s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   min-height: 48px;
   color: white;
 }
-
-.feira-btn-float:active {
-  transform: scale(0.95);
-}
-
+.feira-btn-float:active { transform: scale(0.95); }
 .feira-btn-float-lead {
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   background: linear-gradient(135deg, #00E5D0, #5B7FFF);
 }
-
 .feira-btn-float-next {
-  bottom: 24px;
-  left: 24px;
-  background: rgba(60,60,80,0.9);
-  backdrop-filter: blur(10px);
+  bottom: 20px;
+  left: 20px;
+  background: rgba(50,50,70,0.9);
+  backdrop-filter: blur(8px);
 }
 
-/* ========== TIMER ========== */
+/* Timer */
 .feira-timer {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 12px;
+  right: 16px;
   background: rgba(255,255,255,0.08);
-  padding: 6px 14px;
-  border-radius: 16px;
-  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 12px;
   font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.6);
 }
-
 .feira-timer.timer-warning {
   background: rgba(255,80,80,0.7);
   color: white;
   animation: timerPulse 1s infinite;
 }
-
 @keyframes timerPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
 
-/* ========== RESPONSIVIDADE ========== */
+/* ===== RESPONSIVIDADE ===== */
 
-/* Tablet retrato (iPad 10.2" = 810x1080) */
+/* Tablet retrato */
 @media (max-width: 820px) and (orientation: portrait) {
-  .feira-screen { padding: 20px 16px; }
-  .feira-apres-title { font-size: 26px; }
-  .feira-kpi-val { font-size: 20px; }
+  .feira-screen { padding: 16px; max-width: 100%; }
+  .feira-apres-title { font-size: 24px; }
   .feira-diffs { grid-template-columns: repeat(2, 1fr); }
-  .feira-apres-cta { flex-direction: column; }
+  .feira-apres-cta { flex-direction: column; gap: 8px; }
+  .feira-consultor-list { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
 
-/* Tablet paisagem (ideal) */
-@media (min-width: 821px) and (max-width: 1180px) and (orientation: landscape) {
-  .feira-screen { max-width: 720px; padding: 32px; }
-  .feira-kpi-val { font-size: 28px; }
+/* Tablet paisagem */
+@media (min-width: 821px) and (orientation: landscape) {
+  .feira-screen { max-width: 640px; }
 }
 
-/* Smartphone (fallback) */
+/* Smartphone */
 @media (max-width: 480px) {
-  .feira-screen { padding: 16px 12px; }
-  .feira-apres-title { font-size: 22px; }
-  .feira-kpis { grid-template-columns: 1fr; gap: 8px; }
-  .feira-kpi { display: flex; align-items: center; gap: 12px; padding: 10px 16px; text-align: left; }
-  .feira-kpi-val { margin-bottom: 0; font-size: 22px; }
+  .feira-screen { padding: 12px; }
+  .feira-apres-title { font-size: 20px; }
+  .feira-kpis { gap: 6px; }
+  .feira-kpi-val { font-size: 18px; }
   .feira-diffs { grid-template-columns: 1fr 1fr; }
-  .feira-consultor-btn { padding: 14px 20px; font-size: 15px; }
+  .feira-consultor-list { grid-template-columns: 1fr; }
+  .feira-consultor-btn { padding: 12px; font-size: 14px; min-height: 48px; }
 }
 
-/* Touch targets mínimos (WCAG) */
+/* Touch */
 @media (pointer: coarse) {
   .feira-consultor-btn,
   .feira-btn-primary,
   .feira-btn-secondary,
   .feira-btn-proximo,
-  .feira-btn-float {
-    min-height: 52px;
-  }
-
-  .feira-field input {
-    min-height: 50px;
-    font-size: 17px;
-  }
+  .feira-btn-float { min-height: 48px; }
+  .feira-field input { min-height: 48px; font-size: 16px; }
+  .feira-termo-slider { height: 12px; }
+  .feira-termo-slider::-webkit-slider-thumb { width: 32px; height: 32px; }
 }
 
-/* Esconder elementos do site principal quando overlay está ativo */
+/* Esconder site principal */
 .feira-mode .topbar { z-index: 1; }
 .feira-mode .live-pulse { display: none !important; }
 .feira-mode .feira-splash { display: none !important; }
