@@ -225,6 +225,385 @@
   .feira-vitrine-sub { font-size: 14px; }
 }
 
+/* ===== TELA 2: PITCH DECK ===== */
+.pitch-deck {
+  padding: 0 !important;
+  overflow: hidden;
+  position: relative;
+  max-width: 100% !important;
+}
+
+.pitch-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.pitch-slide {
+  min-width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px 100px;
+  text-align: center;
+  position: relative;
+}
+
+/* Arrows */
+.pitch-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.pitch-arrow:active { background: rgba(255,255,255,0.15); transform: translateY(-50%) scale(0.9); }
+.pitch-arrow-left { left: 12px; }
+.pitch-arrow-right { right: 12px; }
+
+/* Dots */
+.pitch-dots {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.pitch-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pitch-dot.active {
+  background: #00E5D0;
+  transform: scale(1.3);
+}
+
+/* Lead + Sim buttons */
+.pitch-lead-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #00E5D0, #5B7FFF);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0,229,208,0.3);
+  transition: all 0.15s;
+}
+.pitch-lead-btn:active { transform: scale(0.95); }
+
+.pitch-sim-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s;
+}
+.pitch-sim-btn:active { background: rgba(255,255,255,0.15); }
+
+/* ---- Slide 1: Hook ---- */
+.pitch-slide-hook { background: radial-gradient(ellipse at 50% 40%, rgba(0,229,208,0.08) 0%, transparent 60%); }
+.pitch-logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 24px;
+  animation: vitrineFloat 4s ease-in-out infinite;
+}
+.pitch-hook-text {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: white;
+}
+.pitch-hook-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+.pitch-badge {
+  background: rgba(0,229,208,0.1);
+  border: 1px solid rgba(0,229,208,0.25);
+  color: #00E5D0;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pitch-particles {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(0,229,208,0.3), transparent),
+    radial-gradient(2px 2px at 80% 20%, rgba(91,127,255,0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(168,85,247,0.2), transparent),
+    radial-gradient(2px 2px at 30% 80%, rgba(0,229,208,0.2), transparent),
+    radial-gradient(2px 2px at 70% 50%, rgba(91,127,255,0.2), transparent);
+  animation: particlesDrift 12s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes particlesDrift {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-10px) scale(1.05); opacity: 1; }
+}
+
+/* ---- Slide 2: Social ---- */
+.pitch-slide-social { background: radial-gradient(ellipse at 50% 50%, rgba(91,127,255,0.06) 0%, transparent 60%); }
+.pitch-section-title {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 28px;
+}
+.pitch-counters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 500px;
+}
+.pitch-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pitch-counter-val {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #00E5D0;
+  line-height: 1;
+}
+.pitch-counter-plus {
+  font-size: 20px;
+  color: #00E5D0;
+  font-weight: 700;
+  margin-left: 2px;
+}
+.pitch-counter-lbl {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.pitch-social-proof {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+  max-width: 400px;
+}
+
+/* ---- Slide 3: Modelo ---- */
+.pitch-slide-modelo { background: radial-gradient(ellipse at 50% 50%, rgba(168,85,247,0.05) 0%, transparent 60%); }
+.pitch-diffs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  max-width: 420px;
+  width: 100%;
+}
+.pitch-diff-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.4s ease;
+}
+.pitch-diff-icon { font-size: 32px; }
+.pitch-diff-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+.pitch-diff-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.3;
+}
+
+/* ---- Slide 4: ROI ---- */
+.pitch-slide-roi { background: radial-gradient(ellipse at 50% 30%, rgba(0,229,208,0.06) 0%, transparent 60%); }
+.pitch-roi-kpis {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.pitch-roi-kpi {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: center;
+}
+.pitch-roi-kpi-hl {
+  border-color: rgba(0,229,208,0.3);
+  background: rgba(0,229,208,0.06);
+}
+.pitch-roi-val {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #00E5D0;
+  margin-bottom: 4px;
+}
+.pitch-roi-lbl {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.3;
+}
+
+.pitch-compare {
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+}
+.pitch-compare-title {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.pitch-compare-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.pitch-compare-lbl {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  min-width: 120px;
+  text-align: right;
+}
+.pitch-compare-bar {
+  height: 28px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+.pitch-compare-bar-hl {
+  background: linear-gradient(90deg, rgba(0,229,208,0.2), rgba(0,229,208,0.4));
+  color: #00E5D0;
+  font-weight: 700;
+}
+.pitch-compare-avend .pitch-compare-lbl { color: #00E5D0; font-weight: 700; }
+
+/* ---- Slide 5: CTA ---- */
+.pitch-slide-cta { background: radial-gradient(ellipse at 50% 50%, rgba(91,127,255,0.06) 0%, transparent 60%); }
+.pitch-invest-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.pitch-invest-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 24px 20px;
+  text-align: center;
+  flex: 1;
+}
+.pitch-invest-card-exp {
+  border-color: rgba(0,229,208,0.25);
+  background: rgba(0,229,208,0.04);
+}
+.pitch-invest-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+.pitch-invest-price {
+  font-family: "Clash Display", system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #00E5D0;
+  margin-bottom: 6px;
+}
+.pitch-invest-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.3;
+}
+.pitch-urgencia {
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  color: #FBB724;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Responsividade pitch */
+@media (max-width: 820px) and (orientation: portrait) {
+  .pitch-hook-text { font-size: 26px; }
+  .pitch-counters { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .pitch-counter-val { font-size: 28px; }
+  .pitch-roi-kpis { flex-direction: column; gap: 10px; }
+  .pitch-invest-cards { flex-direction: column; gap: 10px; }
+  .pitch-compare-lbl { min-width: 90px; font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  .pitch-hook-text { font-size: 22px; }
+  .pitch-slide { padding: 50px 20px 90px; }
+  .pitch-diffs-grid { grid-template-columns: 1fr; }
+}
+
 /* ===== TELA 1: CONSULTOR ===== */
 .feira-consultor-list {
   display: grid;

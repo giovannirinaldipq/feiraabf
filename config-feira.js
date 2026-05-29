@@ -139,53 +139,193 @@
     });
   }
 
-  // ========== TELA 2: APRESENTAÇÃO ==========
+  // ========== TELA 2: PITCH DECK INTERATIVO ==========
+  var currentSlide = 0;
+  var totalSlides = 5;
+
+  function getSlides() {
+    return [
+      // Slide 1 — Hook
+      '<div class="pitch-slide pitch-slide-hook">' +
+        '<div class="pitch-particles"></div>' +
+        '<img class="pitch-logo" src="assets/icone-avend.png" alt="AVEND" />' +
+        '<h1 class="pitch-hook-text">E se você tivesse um negócio que<br><span class="feira-grad">funciona enquanto você dorme?</span></h1>' +
+        '<p class="pitch-hook-sub">Varejo automatizado. Sem funcionários. Receita recorrente.</p>' +
+        '<span class="pitch-badge">' + CONFIG.evento + '</span>' +
+      '</div>',
+
+      // Slide 2 — Prova Social
+      '<div class="pitch-slide pitch-slide-social">' +
+        '<h2 class="pitch-section-title">Nossa Rede</h2>' +
+        '<div class="pitch-counters">' +
+          '<div class="pitch-counter"><span class="pitch-counter-val" data-target="100">0</span><span class="pitch-counter-plus">+</span><span class="pitch-counter-lbl">Franqueados ativos</span></div>' +
+          '<div class="pitch-counter"><span class="pitch-counter-val" data-target="150">0</span><span class="pitch-counter-plus">+</span><span class="pitch-counter-lbl">Máquinas operando</span></div>' +
+          '<div class="pitch-counter"><span class="pitch-counter-val" data-target="14">0</span><span class="pitch-counter-plus">+</span><span class="pitch-counter-lbl">Estados</span></div>' +
+          '<div class="pitch-counter"><span class="pitch-counter-val" data-target="10">0</span><span class="pitch-counter-plus">+</span><span class="pitch-counter-lbl">Anos de operação</span></div>' +
+        '</div>' +
+        '<p class="pitch-social-proof">Rede em expansão acelerada — maior operação de vending por franquia do Brasil</p>' +
+      '</div>',
+
+      // Slide 3 — Diferenciais
+      '<div class="pitch-slide pitch-slide-modelo">' +
+        '<h2 class="pitch-section-title">Por que funciona?</h2>' +
+        '<div class="pitch-diffs-grid">' +
+          '<div class="pitch-diff-card pitch-diff-1"><span class="pitch-diff-icon">🏢</span><span class="pitch-diff-title">Zero funcionários</span><span class="pitch-diff-desc">Sem CLT, sem gestão de equipe</span></div>' +
+          '<div class="pitch-diff-card pitch-diff-2"><span class="pitch-diff-icon">🕒</span><span class="pitch-diff-title">Opera 24/7</span><span class="pitch-diff-desc">Faturando enquanto você dorme</span></div>' +
+          '<div class="pitch-diff-card pitch-diff-3"><span class="pitch-diff-icon">📈</span><span class="pitch-diff-title">Escalável</span><span class="pitch-diff-desc">Adicione máquinas conforme cresce</span></div>' +
+          '<div class="pitch-diff-card pitch-diff-4"><span class="pitch-diff-icon">💳</span><span class="pitch-diff-title">Pix + Cartão</span><span class="pitch-diff-desc">Pagamento digital integrado</span></div>' +
+        '</div>' +
+      '</div>',
+
+      // Slide 4 — ROI
+      '<div class="pitch-slide pitch-slide-roi">' +
+        '<h2 class="pitch-section-title">Retorno do Investimento</h2>' +
+        '<div class="pitch-roi-kpis">' +
+          '<div class="pitch-roi-kpi"><div class="pitch-roi-val">12-18</div><div class="pitch-roi-lbl">meses<br>payback</div></div>' +
+          '<div class="pitch-roi-kpi pitch-roi-kpi-hl"><div class="pitch-roi-val">30%+</div><div class="pitch-roi-lbl">margem<br>líquida</div></div>' +
+          '<div class="pitch-roi-kpi"><div class="pitch-roi-val">R$ 28.500</div><div class="pitch-roi-lbl">patrimônio<br>por máquina</div></div>' +
+        '</div>' +
+        '<div class="pitch-compare">' +
+          '<div class="pitch-compare-title">Comparativo com franquias tradicionais</div>' +
+          '<div class="pitch-compare-row"><span class="pitch-compare-lbl">Franquia alimentação</span><span class="pitch-compare-bar" style="width:85%">R$ 250k+</span></div>' +
+          '<div class="pitch-compare-row"><span class="pitch-compare-lbl">Franquia serviços</span><span class="pitch-compare-bar" style="width:60%">R$ 150k+</span></div>' +
+          '<div class="pitch-compare-row pitch-compare-avend"><span class="pitch-compare-lbl">AVEND</span><span class="pitch-compare-bar pitch-compare-bar-hl" style="width:25%">R$ 55k</span></div>' +
+        '</div>' +
+      '</div>',
+
+      // Slide 5 — Investimento + CTA
+      '<div class="pitch-slide pitch-slide-cta">' +
+        '<h2 class="pitch-section-title">Investimento</h2>' +
+        '<div class="pitch-invest-cards">' +
+          '<div class="pitch-invest-card">' +
+            '<div class="pitch-invest-tag">Entrada na rede</div>' +
+            '<div class="pitch-invest-price">R$ 55.000</div>' +
+            '<div class="pitch-invest-desc">1ª máquina + franquia + treinamento</div>' +
+          '</div>' +
+          '<div class="pitch-invest-card pitch-invest-card-exp">' +
+            '<div class="pitch-invest-tag">Expansão</div>' +
+            '<div class="pitch-invest-price">R$ 23.990</div>' +
+            '<div class="pitch-invest-desc">Cada máquina adicional (Bom Franqueado)</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="pitch-urgencia">⚡ Condição especial feira — fale com o consultor</div>' +
+      '</div>'
+    ];
+  }
+
   function showApresentacao() {
     atendimentoStart = Date.now();
     startTimer();
+    currentSlide = 0;
 
     var overlay = getOverlay();
     overlay.style.display = 'flex';
-    overlay.innerHTML = '<div class="feira-screen feira-screen-apresentacao">' +
+
+    var slides = getSlides();
+    var dotsHtml = '';
+    for (var i = 0; i < totalSlides; i++) {
+      dotsHtml += '<span class="pitch-dot' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '"></span>';
+    }
+
+    overlay.innerHTML = '<div class="feira-screen feira-screen-apresentacao pitch-deck">' +
       '<div class="feira-timer" id="feira-timer">⏱ ' + CONFIG.maxMinutos + ':00</div>' +
-      '<div class="feira-header-row">' +
-        '<img class="feira-logo-sm" src="assets/icone-avend.png" alt="AVEND" />' +
-        '<span class="feira-badge">' + CONFIG.evento + '</span>' +
+
+      '<div class="pitch-track" id="pitch-track">' +
+        slides.join('') +
       '</div>' +
 
-      '<h1 class="feira-apres-title">Franquia de<br><span class="feira-grad">Vending Machines</span></h1>' +
+      '<button class="pitch-arrow pitch-arrow-left" id="pitch-prev">‹</button>' +
+      '<button class="pitch-arrow pitch-arrow-right" id="pitch-next">›</button>' +
 
-      '<div class="feira-kpis">' +
-        '<div class="feira-kpi"><div class="feira-kpi-val">12-18</div><div class="feira-kpi-lbl">meses payback</div></div>' +
-        '<div class="feira-kpi"><div class="feira-kpi-val">30%+</div><div class="feira-kpi-lbl">margem líquida</div></div>' +
-        '<div class="feira-kpi"><div class="feira-kpi-val">R$ 28.500</div><div class="feira-kpi-lbl">patrimônio/máq</div></div>' +
-      '</div>' +
+      '<div class="pitch-dots" id="pitch-dots">' + dotsHtml + '</div>' +
 
-      '<div class="feira-diffs">' +
-        '<div class="feira-diff">🏢 Sem funcionários</div>' +
-        '<div class="feira-diff">🕒 Opera 24/7</div>' +
-        '<div class="feira-diff">📈 Escalável</div>' +
-        '<div class="feira-diff">💳 Pix + Cartão</div>' +
-      '</div>' +
-
-      '<div class="feira-investimentos">' +
-        '<div class="feira-invest-item"><span class="feira-invest-label">1ª máquina + franquia</span><span class="feira-invest-val">R$ 55.000</span></div>' +
-        '<div class="feira-invest-item"><span class="feira-invest-label">Máquinas adicionais</span><span class="feira-invest-val">R$ 23.990</span></div>' +
-      '</div>' +
-
-      '<div class="feira-apres-cta">' +
-        '<button class="feira-btn-primary" id="feira-go-lead">Cadastrar Lead →</button>' +
-        '<button class="feira-btn-secondary" id="feira-go-simulador">Ver Simulador</button>' +
-      '</div>' +
+      '<button class="pitch-lead-btn" id="pitch-go-lead">Cadastrar Lead →</button>' +
+      '<button class="pitch-sim-btn" id="pitch-go-sim">Ver Simulador</button>' +
 
       '<button class="feira-btn-trocar" id="feira-trocar-consultor">👤 ' + consultorAtivo.nome + '</button>' +
     '</div>';
 
-    document.getElementById('feira-go-lead').addEventListener('click', showCapturaLead);
-    document.getElementById('feira-go-simulador').addEventListener('click', goToSimulador);
+    // Navegação
+    document.getElementById('pitch-prev').addEventListener('click', function() { goSlide(currentSlide - 1); });
+    document.getElementById('pitch-next').addEventListener('click', function() { goSlide(currentSlide + 1); });
+
+    // Dots
+    document.querySelectorAll('.pitch-dot').forEach(function(dot) {
+      dot.addEventListener('click', function() { goSlide(parseInt(dot.dataset.idx)); });
+    });
+
+    // Swipe touch
+    var track = document.getElementById('pitch-track');
+    var touchStartX = 0;
+    track.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', function(e) {
+      var diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        goSlide(currentSlide + (diff > 0 ? 1 : -1));
+      }
+    }, { passive: true });
+
+    // CTAs
+    document.getElementById('pitch-go-lead').addEventListener('click', showCapturaLead);
+    document.getElementById('pitch-go-sim').addEventListener('click', goToSimulador);
     document.getElementById('feira-trocar-consultor').addEventListener('click', function() {
       sessionStorage.removeItem('feira-consultor');
       showConsultor();
+    });
+
+    goSlide(0);
+  }
+
+  function goSlide(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= totalSlides) idx = totalSlides - 1;
+    currentSlide = idx;
+
+    var track = document.getElementById('pitch-track');
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+
+    // Dots
+    document.querySelectorAll('.pitch-dot').forEach(function(dot, i) {
+      dot.classList.toggle('active', i === idx);
+    });
+
+    // Arrows
+    document.getElementById('pitch-prev').style.opacity = idx === 0 ? '0.2' : '1';
+    document.getElementById('pitch-next').style.opacity = idx === totalSlides - 1 ? '0.2' : '1';
+
+    // Counter animation no slide 2
+    if (idx === 1) animateCounters();
+
+    // Diff cards animation no slide 3
+    if (idx === 2) animateDiffs();
+  }
+
+  function animateCounters() {
+    document.querySelectorAll('.pitch-counter-val').forEach(function(el) {
+      var target = parseInt(el.dataset.target);
+      var duration = 1200;
+      var start = performance.now();
+      el.textContent = '0';
+
+      function tick(now) {
+        var progress = Math.min((now - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function animateDiffs() {
+    document.querySelectorAll('.pitch-diff-card').forEach(function(card, i) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(function() {
+        card.style.transition = 'all 0.4s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, i * 150);
     });
   }
 
