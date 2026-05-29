@@ -81,7 +81,7 @@
     overlay.innerHTML = '<div class="feira-screen feira-screen-vitrine">' +
       '<div class="feira-vitrine-bg"></div>' +
       '<div class="feira-vitrine-content">' +
-        '<img class="feira-vitrine-logo" src="assets/icone-avend.jpg" alt="AVEND" />' +
+        '<img class="feira-vitrine-logo" src="assets/icone-avend.jpg?v=2" alt="AVEND" />' +
         '<h1 class="feira-vitrine-title">Franquia de<br><span class="feira-grad">Vending Machines</span></h1>' +
         '<p class="feira-vitrine-sub">Varejo automatizado · Sem funcionários · Opera 24/7</p>' +
 
