@@ -977,7 +977,13 @@ function renderMarketChart() {
           type: "logarithmic",
           ticks: {
             color: "#a7adca",
-            callback: (v) => v.toLocaleString("pt-BR")
+            callback: (v) => {
+              const show = [10, 50, 100, 500, 1000, 3000];
+              return show.includes(v) ? v.toLocaleString("pt-BR") : "";
+            },
+            maxRotation: 0,
+            autoSkip: false,
+            font: { size: 11 }
           },
           grid: { color: "rgba(139,48,230,0.10)" },
           title: {
