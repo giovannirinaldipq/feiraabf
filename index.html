@@ -17,28 +17,25 @@
        • Invalidar TODOS de uma vez: bumpar KEY (v1 → v2 → ...) —
          todo localStorage com versão antiga vira inválido
        ============================================================ -->
-  <!-- Modo Feira - Detecção early (antes de qualquer asset) -->
+  <!-- Modo Feira - SEMPRE ativo (site exclusivo para feira) -->
   <script>
-    // Detecta modo feira
-    var isFeiraMode = location.search.includes('feira=true') ||
-                     location.hash.includes('#feira');
+    // Modo feira SEMPRE ativo — este site é exclusivo para Feira ABF
+    var isFeiraMode = true;
 
-    if (isFeiraMode) {
-      document.documentElement.classList.add('feira-mode');
-      // Limpar sessionStorage (dados de navegação) mas PRESERVAR feira-leads no localStorage
-      try {
-        sessionStorage.clear();
-        // Limpar tudo EXCETO backup de leads
-        var leadsBackup = localStorage.getItem('feira-leads');
-        var keys = [];
-        for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
-        keys.forEach(function(k) { if (k !== 'feira-leads') localStorage.removeItem(k); });
-        if (leadsBackup) localStorage.setItem('feira-leads', leadsBackup);
-      } catch(e) {}
+    document.documentElement.classList.add('feira-mode');
+    // Limpar sessionStorage (dados de navegação) mas PRESERVAR feira-leads no localStorage
+    try {
+      sessionStorage.clear();
+      // Limpar tudo EXCETO backup de leads
+      var leadsBackup = localStorage.getItem('feira-leads');
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i));
+      keys.forEach(function(k) { if (k !== 'feira-leads') localStorage.removeItem(k); });
+      if (leadsBackup) localStorage.setItem('feira-leads', leadsBackup);
+    } catch(e) {}
 
-      // Desativar tour automático
-      try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
-    }
+    // Desativar tour automático
+    try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
   </script>
   <script>
     /* ============================================================

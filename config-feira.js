@@ -12,8 +12,8 @@
 (function() {
   'use strict';
 
-  var isFeiraMode = document.documentElement.classList.contains('feira-mode');
-  if (!isFeiraMode) return;
+  // Modo feira SEMPRE ativo (site exclusivo para feira)
+  var isFeiraMode = true;
 
   // ========== CONFIGURAÇÃO ==========
   var CONFIG = {
