@@ -14,12 +14,14 @@
     evento: "Feira ABF 2026",
     maxMinutos: 8,
     consultores: [
+      { id: "giovanni", nome: "Giovanni Rinaldi" },
       { id: "tayrone", nome: "Tayrone Gomes" },
       { id: "thiago", nome: "Thiago Artibale" },
       { id: "guilherme-n", nome: "Guilherme Nogueira" },
       { id: "guilherme-o", nome: "Guilherme Oliveira" },
       { id: "gabriel", nome: "Gabriel Stuqui" },
-      { id: "jonathan", nome: "Jonathan Xavier" }
+      { id: "jonathan", nome: "Jonathan Xavier" },
+      { id: "isadora", nome: "Isadora Roque" }
     ],
     endpoint: "https://script.google.com/macros/s/AKfycbwdC4YKekPo6qliAs1QtbLwBm4zuwh2PPIBOFJC5MTDOSwRgViQFMPbvjZlCnSwUKsB/exec"
   };
