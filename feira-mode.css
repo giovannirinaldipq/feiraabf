@@ -705,3 +705,17 @@
 .feira-mode #vsl-quiz { display: none !important; }
 .feira-mode #quiz-overlay { display: none !important; }
 .feira-mode #quiz-result { display: none !important; }
+
+/* Navegação proporcional */
+.feira-mode .nav-group {
+  padding: 8px 14px;
+  font-size: 12px;
+}
+.feira-mode .nav-sub {
+  gap: 4px;
+  padding: 8px 12px;
+}
+.feira-mode .nav-sub-item {
+  padding: 6px 12px;
+  font-size: 12px;
+}
