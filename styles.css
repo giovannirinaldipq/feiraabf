@@ -3318,10 +3318,18 @@ input[type="range"]::-moz-range-thumb {
 .src-cat-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
+  flex-wrap: nowrap;
+}
+.src-cat-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 .src-cat-icon { font-size: 16px; flex-shrink: 0; line-height: 1; }
 .src-cat-title {
@@ -3329,11 +3337,11 @@ input[type="range"]::-moz-range-thumb {
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
+  margin: 0;
 }
 .src-cat-count {
   font-size: 10px;
   color: var(--text-mute);
-  margin-left: auto;
   white-space: nowrap;
   line-height: 1;
 }
