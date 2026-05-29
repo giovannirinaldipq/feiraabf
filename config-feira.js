@@ -122,7 +122,7 @@
     }).join('');
 
     overlay.innerHTML = '<div class="feira-screen feira-screen-consultor">' +
-      '<img class="feira-logo" src="assets/logo-full.png" alt="AVEND" />' +
+      '<img class="feira-logo" src="assets/icone-avend.png" alt="AVEND" />' +
       '<h2 class="feira-screen-title">Quem está atendendo?</h2>' +
       '<p class="feira-screen-sub">Selecione seu nome para iniciar o turno</p>' +
       '<div class="feira-consultor-list">' + btns + '</div>' +
@@ -149,7 +149,7 @@
     overlay.innerHTML = '<div class="feira-screen feira-screen-apresentacao">' +
       '<div class="feira-timer" id="feira-timer">⏱ ' + CONFIG.maxMinutos + ':00</div>' +
       '<div class="feira-header-row">' +
-        '<img class="feira-logo-sm" src="assets/logo-full.png" alt="AVEND" />' +
+        '<img class="feira-logo-sm" src="assets/icone-avend.png" alt="AVEND" />' +
         '<span class="feira-badge">' + CONFIG.evento + '</span>' +
       '</div>' +
 
@@ -194,7 +194,7 @@
     var overlay = getOverlay();
     overlay.innerHTML = '<div class="feira-screen feira-screen-lead">' +
       '<div class="feira-timer" id="feira-timer">⏱ --:--</div>' +
-      '<img class="feira-logo-sm" src="assets/logo-full.png" alt="AVEND" />' +
+      '<img class="feira-logo-sm" src="assets/icone-avend.png" alt="AVEND" />' +
       '<h2 class="feira-lead-title">Cadastrar Lead</h2>' +
 
       '<form class="feira-lead-form" id="feira-lead-form" autocomplete="on">' +
