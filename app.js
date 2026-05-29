@@ -245,11 +245,11 @@ function simulate(params) {
 const state = {
   faturamentoPorMaquina: 10000,
   percReinvestFase1: 100,
-  duracaoFase1Meses: 36,          // 3 anos em 100%
+  duracaoFase1Meses: 48,          // 4 anos em 100%
   percReinvestFase2: 50,          // depois 50% (começa a tirar pró-labore)
   reservaCapital: 5000,
   capacidadeImplantacao: 2,
-  horizonteMeses: 60,
+  horizonteMeses: 48,
   charts: {}
 };
 
