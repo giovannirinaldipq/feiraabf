@@ -706,12 +706,23 @@
 .feira-mode #quiz-overlay { display: none !important; }
 .feira-mode #quiz-result { display: none !important; }
 
-/* Navegação proporcional */
+/* Navegação centralizada */
+.feira-mode .topbar {
+  justify-content: center;
+}
+.feira-mode .brand {
+  display: none;
+}
+.feira-mode .nav-main {
+  justify-content: center;
+  flex: none;
+}
 .feira-mode .nav-group {
   padding: 8px 14px;
   font-size: 12px;
 }
 .feira-mode .nav-sub {
+  justify-content: center;
   gap: 4px;
   padding: 8px 12px;
 }
