@@ -123,10 +123,7 @@
 
   <link rel="stylesheet" href="styles.css?v=37" />
   <link rel="stylesheet" href="feira-mode.css?v=2" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
-          integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4"
-          crossorigin="anonymous"
-          defer></script>
+  <script src="assets/vendor/chart.umd.min.js" defer></script>
 </head>
 <body>
   <div class="bg-orbs" aria-hidden="true">
@@ -1680,7 +1677,7 @@
 
       <div class="quiz-progress">
         <span class="quiz-progress-label">
-          Pergunta <strong id="quiz-cur">1</strong> de <strong id="quiz-tot">7</strong>
+          Pergunta <strong id="quiz-cur">1</strong> de <strong id="quiz-tot">10</strong>
         </span>
         <div class="quiz-progress-track">
           <span class="quiz-progress-fill" id="quiz-fill"></span>
@@ -1779,11 +1776,18 @@
 
 
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
+  <script src="assets/vendor/qrcode.min.js" defer></script>
   <script src="cities-data.js?v=32" defer></script>
   <script src="market-territory.js?v=33" defer></script>
   <script src="live-pulse.js?v=31" defer></script>
   <script src="app.js?v=32" defer></script>
   <script src="config-feira.js?v=2" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('sw.js').catch(function(e){ console.warn('SW', e); });
+      });
+    }
+  </script>
 </body>
 </html>

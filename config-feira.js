@@ -32,6 +32,13 @@
 
   // ========== INICIALIZAÇÃO ==========
   document.addEventListener('DOMContentLoaded', function() {
+    // Botão fixo de exportar leads
+    var exp = document.createElement('button');
+    exp.textContent = '⬇ Leads';
+    exp.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:99999;padding:8px 12px;font-size:13px;border:none;border-radius:8px;background:rgba(20,38,89,.85);color:#fff;opacity:.5';
+    exp.addEventListener('click', function(){ window.FEIRA.exportLeads(); });
+    document.body.appendChild(exp);
+
     // Desativar live-pulse
     if (window.AvendLivePulse && window.AvendLivePulse.pause) {
       window.AvendLivePulse.pause();
@@ -208,7 +215,7 @@
             '<div class="pitch-invest-desc">Cada máquina adicional (Bom Franqueado)</div>' +
           '</div>' +
         '</div>' +
-        '<div class="pitch-urgencia">⚡ Condição especial feira — fale com o consultor</div>' +
+        '<div class="pitch-urgencia">⚡ Fale com o consultor sobre as condições de entrada</div>' +
       '</div>'
     ];
   }
@@ -238,6 +245,8 @@
       '<button class="pitch-arrow pitch-arrow-right" id="pitch-next">›</button>' +
 
       '<div class="pitch-dots" id="pitch-dots">' + dotsHtml + '</div>' +
+
+      '<div class="pitch-disclaimer" style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:10px;line-height:1.3;opacity:.55;padding:0 16px;">Projeções ilustrativas baseadas em médias da rede · não constituem promessa de resultado · termos vinculantes na COF (Lei 13.966/2019)</div>' +
 
       '<button class="pitch-lead-btn" id="pitch-go-lead">Cadastrar Lead →</button>' +
       '<button class="pitch-sim-btn" id="pitch-go-sim">Ver Simulador</button>' +
@@ -366,6 +375,10 @@
           '<div class="feira-termo-indicator" id="feira-termo-indicator">🌤 Morno</div>' +
         '</div>' +
 
+        '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;opacity:.8;margin:8px 0;">' +
+          '<input type="checkbox" id="lead-consent" required style="margin-top:2px;" />' +
+          '<span>Autorizo a AVEND a entrar em contato sobre a franquia e a tratar meus dados conforme a LGPD.</span>' +
+        '</label>' +
         '<button type="submit" class="feira-btn-primary feira-btn-submit">Salvar Lead ✓</button>' +
         '<button type="button" class="feira-btn-voltar" id="feira-voltar-lead">← Voltar</button>' +
       '</form>' +
@@ -406,6 +419,10 @@
     // Submit
     document.getElementById('feira-lead-form').addEventListener('submit', function(e) {
       e.preventDefault();
+      if (!document.getElementById('lead-consent').checked) {
+        alert('É necessário autorizar o contato para cadastrar.');
+        return;
+      }
       var nome = document.getElementById('lead-nome').value.trim();
       var telefone = document.getElementById('lead-telefone').value.trim();
       var cidade = document.getElementById('lead-cidade').value.trim();
@@ -532,45 +549,53 @@
   }
 
   function enviarLead(data) {
-    var payload = {
-      type: 'event',
-      session_id: 'feira_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
-      event: {
-        type: 'feira_lead_captured',
-        t: Date.now(),
-        data: {
-          nome: data.nome,
-          telefone: data.telefone,
-          cidade: data.cidade || '',
-          temperatura: data.temperatura,
-          temperaturaNum: data.temperaturaNum,
-          consultor: data.consultor,
-          consultorId: data.consultorId,
-          evento: data.evento,
-          timestamp: data.timestamp
-        }
-      },
-      visitor: {
-        name: data.nome,
-        phone: data.telefone,
-        city: data.cidade || ''
-      }
-    };
-
-    try {
-      if (CONFIG.endpoint) {
-        var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
-        navigator.sendBeacon(CONFIG.endpoint, blob);
-      }
-    } catch(e) { console.warn('[feira-send]', e); }
-
-    // Backup local
+    var lead = Object.assign({}, data, {
+      _id: Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
+      _enviado: false
+    });
     try {
       var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
-      leads.push(data);
+      leads.push(lead);
+      localStorage.setItem('feira-leads', JSON.stringify(leads));
+    } catch(e) {}
+    tentarEnviar(lead);
+  }
+
+  function tentarEnviar(lead) {
+    if (!CONFIG.endpoint || !navigator.onLine) return;
+    var payload = {
+      type: 'event',
+      session_id: 'feira_' + lead._id,
+      event: { type: 'feira_lead_captured', t: Date.now(), data: {
+        nome: lead.nome, telefone: lead.telefone, cidade: lead.cidade || '',
+        temperatura: lead.temperatura, temperaturaNum: lead.temperaturaNum,
+        consultor: lead.consultor, consultorId: lead.consultorId,
+        evento: lead.evento, timestamp: lead.timestamp
+      }},
+      visitor: { name: lead.nome, phone: lead.telefone, city: lead.cidade || '' }
+    };
+    try {
+      var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
+      if (navigator.sendBeacon(CONFIG.endpoint, blob)) marcarEnviado(lead._id);
+    } catch(e) { console.warn('[feira-send]', e); }
+  }
+
+  function marcarEnviado(id) {
+    try {
+      var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
+      leads.forEach(function(l){ if (l._id === id) l._enviado = true; });
       localStorage.setItem('feira-leads', JSON.stringify(leads));
     } catch(e) {}
   }
+
+  function flushPendentes() {
+    try {
+      JSON.parse(localStorage.getItem('feira-leads') || '[]')
+        .filter(function(l){ return !l._enviado; })
+        .forEach(tentarEnviar);
+    } catch(e) {}
+  }
+  window.addEventListener('online', flushPendentes);
 
   function proximoInvestidor() {
     if (timerInterval) clearInterval(timerInterval);
@@ -579,24 +604,27 @@
     showVitrine();
   }
 
-  // Expor para debug/export
   window.FEIRA = {
     config: CONFIG,
     proximoInvestidor: proximoInvestidor,
+    flushPendentes: flushPendentes,
     exportLeads: function() {
-      var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
-      console.table(leads);
-      try {
-        var csv = 'Nome,Telefone,Cidade,Temperatura,Consultor,Timestamp\n' +
-          leads.map(function(l) {
-            return [l.nome, l.telefone, l.cidade, l.temperatura, l.consultor, l.timestamp].join(',');
-          }).join('\n');
-        navigator.clipboard.writeText(csv);
-        alert('✓ ' + leads.length + ' leads copiados (CSV)');
-      } catch(e) {
-        alert(JSON.stringify(leads, null, 2));
-      }
-      return leads;
+      var leads = [];
+      try { leads = JSON.parse(localStorage.getItem('feira-leads') || '[]'); } catch(e) {}
+      if (!leads.length) { alert('Nenhum lead salvo neste aparelho.'); return; }
+      var head = 'Nome,Telefone,Cidade,Temperatura,Consultor,Status,Timestamp\n';
+      var body = leads.map(function(l){
+        return [l.nome, l.telefone, l.cidade || '', l.temperatura, l.consultor,
+                l._enviado ? 'enviado' : 'PENDENTE', l.timestamp]
+          .map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(',');
+      }).join('\n');
+      var blob = new Blob(["﻿" + head + body], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'leads-avend-abf-' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+      var pend = leads.filter(function(l){return !l._enviado;}).length;
+      if (pend) alert(pend + ' lead(s) ainda PENDENTES — mantenha este aparelho até sincronizar.');
     }
   };
 })();
