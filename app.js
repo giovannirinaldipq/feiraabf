@@ -512,7 +512,7 @@ function renderKPIs(sim) {
   setText("kpi-lucro-hint", `Mês ${sim.horizonteMeses} · operação madura`);
 
   setKpiAnimated("mini-lucro-maq", sim.lucro1Maq, v => fmtBRL(v));
-  setKpiAnimated("mini-custo-nova", sim.custoNovaMaquina, v => fmtBRL(v));
+  setKpiAnimated("mini-custo-nova", 23990, v => fmtBRL(v));
   setKpiAnimated("mini-frota-final", sim.frotaFinal, v => `${Math.round(v)} un.`);
   setKpiAnimated("mini-lucro-final", sim.lucroMensalFinal, v => fmtBRL(v));
   setKpiAnimated("mini-prolabore", sim.totalProLabore, v => fmtBRL(v));
@@ -520,7 +520,7 @@ function renderKPIs(sim) {
 
   // Stat strip do overview
   const lucroCumul = sim.linhas[sim.linhas.length - 1].lucroAcumulado;
-  setKpiAnimated("strip-capex", sim.custoNovaMaquina, v => fmtBRL(v));
+  setKpiAnimated("strip-capex", 23990, v => fmtBRL(v));
   setKpiAnimated("strip-lucro-cumul", lucroCumul, v => fmtBRL(v));
   setKpiAnimated("strip-prolabore", sim.totalProLabore, v => fmtBRL(v));
   setKpiAnimated("strip-patrimonio", sim.patrimonioFinal, v => fmtBRL(v));
@@ -598,7 +598,7 @@ function renderTimeline(sim) {
         <div class="tl-meta">
           <span>Máquinas após ativação: <strong>${frotaDepois} un.</strong></span>
           ${lucroProj != null ? `<span>Lucro projetado: <strong>${fmtBRL(lucroProj)}</strong></span>` : ""}
-          <span>CAPEX unit.: <strong>${fmtBRL(sim.custoNovaMaquina)}</strong></span>
+          <span>CAPEX unit.: <strong>${fmtBRL(23990)}</strong></span>
         </div>
       </div>
     `);
@@ -635,14 +635,14 @@ function renderComparador(sim) {
   el("cmp-m1-lucro",   fmtBRL(m1.lucroLiquido));
   el("cmp-m1-regime",  m1.imposto.regime.split(" (")[0]);
 
-  el("cmp-m2-invest",  fmtBRL(sim.custoNovaMaquina));
+  el("cmp-m2-invest",  fmtBRL(23990));
   el("cmp-m2-payback", fmtPayback(paybackM2));
   el("cmp-m2-lucro",   fmtBRL(m2.lucroLiquido));
   el("cmp-m2-regime",  m2.imposto.regime.split(" (")[0]);
 
   // Tabela comparativa
   el("cmp-tab-invest-1", fmtBRL(MODEL.custoPrimeiraMaquina));
-  el("cmp-tab-invest-2", fmtBRL(sim.custoNovaMaquina));
+  el("cmp-tab-invest-2", fmtBRL(23990));
   el("cmp-tab-payback-1", `${Math.round(paybackM1)} meses`);
   el("cmp-tab-payback-2", `${Math.round(paybackM2)} meses`);
   el("cmp-tab-lucro-1", fmtBRL(m1.lucroLiquido));
