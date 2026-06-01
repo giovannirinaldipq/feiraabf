@@ -574,9 +574,14 @@
         'consultorId=' + encodeURIComponent(lead.consultorId || ''),
         'evento=' + encodeURIComponent(lead.evento || '')
       ].join('&');
-      var img = new Image();
-      img.onload = img.onerror = function(){ marcarEnviado(lead._id); };
-      img.src = CONFIG.endpoint + '?' + params;
+      var url = CONFIG.endpoint + '?' + params;
+      var script = document.createElement('script');
+      script.src = url;
+      script.onload = script.onerror = function() {
+        marcarEnviado(lead._id);
+        script.remove();
+      };
+      document.head.appendChild(script);
     } catch(e) { console.warn('[feira-send]', e); }
   }
 
