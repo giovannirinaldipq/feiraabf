@@ -563,22 +563,22 @@
 
   function tentarEnviar(lead) {
     if (!CONFIG.endpoint || !navigator.onLine) return;
-    var data = {
-      timestamp: lead.timestamp,
-      nome: lead.nome,
-      telefone: lead.telefone,
-      cidade: lead.cidade || '',
-      temperatura: lead.temperatura,
-      temperaturaNum: lead.temperaturaNum,
-      consultor: lead.consultor,
-      consultorId: lead.consultorId,
-      evento: lead.evento
-    };
     try {
-      var form = new FormData();
-      form.append('data', JSON.stringify(data));
-      fetch(CONFIG.endpoint, { method: 'POST', body: form })
-        .then(function(r){ if (r.ok || r.type === 'opaque') marcarEnviado(lead._id); })
+      var params = new URLSearchParams();
+      params.append('timestamp', lead.timestamp || '');
+      params.append('nome', lead.nome || '');
+      params.append('telefone', lead.telefone || '');
+      params.append('cidade', lead.cidade || '');
+      params.append('temperatura', lead.temperatura || '');
+      params.append('consultor', lead.consultor || '');
+      params.append('consultorId', lead.consultorId || '');
+      params.append('evento', lead.evento || '');
+      fetch(CONFIG.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+        redirect: 'follow'
+      }).then(function(){ marcarEnviado(lead._id); })
         .catch(function(e){ console.warn('[feira-send]', e); });
     } catch(e) { console.warn('[feira-send]', e); }
   }
