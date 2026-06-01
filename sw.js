@@ -1,4 +1,4 @@
-const CACHE = 'avend-abf-v1';
+const CACHE = 'avend-abf-v2';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks =>
