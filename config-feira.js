@@ -505,7 +505,7 @@
   function goToSimulador() {
     var overlay = getOverlay();
     overlay.style.display = 'none';
-    if (typeof activateTab === 'function') activateTab('simulador');
+    if (typeof activateTab === 'function') activateTab('overview');
     addFloatButtons();
   }
 
