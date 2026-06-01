@@ -575,8 +575,13 @@
       visitor: { name: lead.nome, phone: lead.telefone, city: lead.cidade || '' }
     };
     try {
-      var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
-      if (navigator.sendBeacon(CONFIG.endpoint, blob)) marcarEnviado(lead._id);
+      fetch(CONFIG.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+      }).then(function(){ marcarEnviado(lead._id); })
+        .catch(function(e){ console.warn('[feira-send]', e); });
     } catch(e) { console.warn('[feira-send]', e); }
   }
 
