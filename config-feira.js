@@ -564,22 +564,44 @@
   function tentarEnviar(lead) {
     if (!CONFIG.endpoint || !navigator.onLine) return;
     try {
-      var params = new URLSearchParams();
-      params.append('timestamp', lead.timestamp || '');
-      params.append('nome', lead.nome || '');
-      params.append('telefone', lead.telefone || '');
-      params.append('cidade', lead.cidade || '');
-      params.append('temperatura', lead.temperatura || '');
-      params.append('consultor', lead.consultor || '');
-      params.append('consultorId', lead.consultorId || '');
-      params.append('evento', lead.evento || '');
-      fetch(CONFIG.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-        redirect: 'follow'
-      }).then(function(){ marcarEnviado(lead._id); })
-        .catch(function(e){ console.warn('[feira-send]', e); });
+      var iframe = document.createElement('iframe');
+      iframe.name = 'feira-send-' + lead._id;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = CONFIG.endpoint;
+      form.target = iframe.name;
+      form.style.display = 'none';
+
+      var fields = {
+        timestamp: lead.timestamp || '',
+        nome: lead.nome || '',
+        telefone: lead.telefone || '',
+        cidade: lead.cidade || '',
+        temperatura: lead.temperatura || '',
+        consultor: lead.consultor || '',
+        consultorId: lead.consultorId || '',
+        evento: lead.evento || ''
+      };
+
+      Object.keys(fields).forEach(function(key) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+      marcarEnviado(lead._id);
+
+      setTimeout(function() {
+        form.remove();
+        iframe.remove();
+      }, 5000);
     } catch(e) { console.warn('[feira-send]', e); }
   }
 
