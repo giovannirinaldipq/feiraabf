@@ -563,23 +563,23 @@
 
   function tentarEnviar(lead) {
     if (!CONFIG.endpoint || !navigator.onLine) return;
-    var payload = {
-      type: 'event',
-      session_id: 'feira_' + lead._id,
-      event: { type: 'feira_lead_captured', t: Date.now(), data: {
-        nome: lead.nome, telefone: lead.telefone, cidade: lead.cidade || '',
-        temperatura: lead.temperatura, temperaturaNum: lead.temperaturaNum,
-        consultor: lead.consultor, consultorId: lead.consultorId,
-        evento: lead.evento, timestamp: lead.timestamp
-      }},
-      visitor: { name: lead.nome, phone: lead.telefone, city: lead.cidade || '' }
+    var data = {
+      timestamp: lead.timestamp,
+      nome: lead.nome,
+      telefone: lead.telefone,
+      cidade: lead.cidade || '',
+      temperatura: lead.temperatura,
+      temperaturaNum: lead.temperaturaNum,
+      consultor: lead.consultor,
+      consultorId: lead.consultorId,
+      evento: lead.evento
     };
     try {
-      var url = CONFIG.endpoint + '?data=' + encodeURIComponent(JSON.stringify(payload));
-      var img = new Image();
-      img.onload = function(){ marcarEnviado(lead._id); };
-      img.onerror = function(){ marcarEnviado(lead._id); };
-      img.src = url;
+      var form = new FormData();
+      form.append('data', JSON.stringify(data));
+      fetch(CONFIG.endpoint, { method: 'POST', body: form })
+        .then(function(r){ if (r.ok || r.type === 'opaque') marcarEnviado(lead._id); })
+        .catch(function(e){ console.warn('[feira-send]', e); });
     } catch(e) { console.warn('[feira-send]', e); }
   }
 
