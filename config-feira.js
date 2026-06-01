@@ -575,13 +575,11 @@
       visitor: { name: lead.nome, phone: lead.telefone, city: lead.cidade || '' }
     };
     try {
-      fetch(CONFIG.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload),
-        mode: 'no-cors'
-      }).then(function(){ marcarEnviado(lead._id); })
-        .catch(function(e){ console.warn('[feira-send]', e); });
+      var url = CONFIG.endpoint + '?data=' + encodeURIComponent(JSON.stringify(payload));
+      var img = new Image();
+      img.onload = function(){ marcarEnviado(lead._id); };
+      img.onerror = function(){ marcarEnviado(lead._id); };
+      img.src = url;
     } catch(e) { console.warn('[feira-send]', e); }
   }
 
