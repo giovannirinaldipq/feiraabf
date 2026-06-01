@@ -23,7 +23,7 @@
       { id: "jonathan", nome: "Jonathan Xavier" },
       { id: "isadora", nome: "Isadora Roque" }
     ],
-    endpoint: "https://script.google.com/macros/s/AKfycbwdC4YKekPo6qliAs1QtbLwBm4zuwh2PPIBOFJC5MTDOSwRgViQFMPbvjZlCnSwUKsB/exec"
+    endpoint: "https://script.google.com/macros/s/AKfycbwQm4Wt-5jNDYIDp-VGiT3Y1aeOPt8CQYUlMrFNnjYki5jn56nXaWuXESlz761h2C0q/exec"
   };
 
   var consultorAtivo = null;
