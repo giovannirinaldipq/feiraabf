@@ -1800,6 +1800,51 @@
   <script src="market-territory.js?v=33" defer></script>
   <script src="live-pulse.js?v=31" defer></script>
   <script src="app.js?v=32" defer></script>
+  <script>
+    // SCRIPT INLINE CRÍTICO - MODO FEIRA ABF
+    (function() {
+      'use strict';
+      console.log('[FEIRA MODE] Iniciando script inline...');
+
+      // Verificar se estamos no modo feira
+      if (window.location.hostname.includes('github.io')) {
+        console.log('[FEIRA MODE] Ativando modo feira...');
+
+        // Criar overlay imediatamente
+        var overlay = document.createElement('div');
+        overlay.id = 'feira-overlay';
+        overlay.className = 'feira-overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;';
+        document.body.appendChild(overlay);
+
+        // Mostrar tela inicial
+        overlay.innerHTML = '<div style="text-align:center;color:white;padding:40px;">' +
+          '<img src="assets/icone-avend.png" style="width:80px;margin-bottom:20px;" alt="AVEND" />' +
+          '<h1 style="font-size:32px;margin-bottom:16px;">Franquia de Vending Machines</h1>' +
+          '<p style="margin-bottom:32px;">Varejo automatizado · Sem funcionários · Opera 24/7</p>' +
+          '<button id="feira-start-btn" style="background:linear-gradient(135deg,#00E5D0,#5B7FFF);color:white;border:none;padding:20px 48px;border-radius:60px;font-size:18px;font-weight:600;cursor:pointer;">Iniciar Atendimento</button>' +
+          '</div>';
+
+        // Adicionar evento de clique
+        document.getElementById('feira-start-btn').addEventListener('click', function() {
+          console.log('[FEIRA MODE] Iniciando seleção de consultor...');
+          overlay.innerHTML = '<div style="text-align:center;color:white;padding:40px;">' +
+            '<h2 style="font-size:24px;margin-bottom:24px;">Quem está atendendo?</h2>' +
+            '<div style="display:flex;flex-direction:column;gap:12px;max-width:300px;margin:0 auto;">' +
+            '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:16px;border-radius:8px;font-size:16px;" onclick="this.parentNode.innerHTML=\'' +
+            '<div style="text-align:center;padding:40px;"><h3>Consultor selecionado!</h3><button onclick=\'document.getElementById(\"feira-overlay\").style.display=\"none\";alert(\"Tela de apresentação carregada!\")\' style=\"background:#00E5D0;color:black;border:none;padding:16px 32px;border-radius:8px;font-weight:600;margin-top:16px;\">Continuar</button></div>\'">Giovanni Rinaldi</button>' +
+            '<button style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:16px;border-radius:8px;font-size:16px;" onclick="this.parentNode.innerHTML=\'' +
+            '<div style=\"text-align:center;padding:40px;\"><h3>Consultor selecionado!</h3><button onclick=\'document.getElementById(\"feira-overlay\").style.display=\"none\";alert(\"Tela de apresentação carregada!\")\' style=\"background:#00E5D0;color:black;border:none;padding:16px 32px;border-radius:8px;font-weight:600;margin-top:16px;\">Continuar</button></div>\'">Tayrone Gomes</button>' +
+            '</div>' +
+            '</div>';
+        });
+
+        console.log('[FEIRA MODE] Tela inicial criada com sucesso!');
+      } else {
+        console.log('[FEIRA MODE] Não é ambiente github.io, não ativando modo feira.');
+      }
+    })();
+  </script>
   <script src="config-feirab.js?v=3" defer></script>
   <script>
     if ('serviceWorker' in navigator) {
