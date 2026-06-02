@@ -6,8 +6,11 @@
 (function() {
   'use strict';
 
+  console.log('[FEIRA MODE] Iniciando...');
+
   // Modo feira SEMPRE ativo (site exclusivo para feira)
   var isFeiraMode = true;
+  console.log('[FEIRA MODE] Modo ativo:', isFeiraMode);
 
   // ========== CONFIGURAÇÃO ==========
   var CONFIG = {
@@ -32,7 +35,8 @@
 
   // ========== INICIALIZAÇÃO ==========
   document.addEventListener('DOMContentLoaded', function() {
-    // BOTÃO FIXO DE EXPORTAR LEADS — VISÍVEL!
+    console.log('[FEIRA MODE] DOMContentLoaded disparado');
+    // Botão fixo de exportar leads
     var exp = document.createElement('button');
     exp.textContent = '⬇ Exportar Leads';
     exp.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99999;padding:14px 20px;font-size:14px;font-weight:600;border:none;border-radius:50px;background:linear-gradient(135deg,#00E5D0,#5B7FFF);color:#fff;box-shadow:0 4px 20px rgba(0,229,208,0.4);cursor:pointer;transition:transform 0.15s;';
