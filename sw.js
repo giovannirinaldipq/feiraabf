@@ -8,6 +8,15 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (new URL(e.request.url).origin !== location.origin) return;
+
+  // Permitir scripts e assets sem cache
+  if (e.request.url.includes('.js') ||
+      e.request.url.includes('config-feirab.js') ||
+      e.request.url.includes('assets/')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then(cached =>
       cached || fetch(e.request).then(resp => {
