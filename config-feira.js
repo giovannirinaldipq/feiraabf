@@ -58,7 +58,7 @@
     // Desativar tour
     try { localStorage.setItem('avend-tour-done', '1'); } catch(e) {}
 
-    // Esconder splash original
+    // Esconder splash original (após injetar nosso overlay)
     var splash = document.getElementById('feira-splash');
     if (splash) splash.style.display = 'none';
     document.body.style.overflow = '';
@@ -72,7 +72,7 @@
 
       if (saved && (now - lastActive < maxIdleMs)) {
         consultorAtivo = JSON.parse(saved);
-        sessionStorage.setItem('feira-last-active', now.toString());
+        sessionStorage.setItem('fea-last-active', now.toString());
         injectOverlay();
         showApresentacao();
         return;
