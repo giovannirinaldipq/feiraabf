@@ -12,7 +12,7 @@
   // ========== CONFIGURAÇÃO ==========
   var CONFIG = {
     evento: "Feira ABF 2026",
-    maxMinutos: 8,
+    maxMinutos: 10,
     consultores: [
       { id: "giovanni", nome: "Giovanni Rinaldi" },
       { id: "tayrone", nome: "Tayrone Gomes" },
@@ -32,12 +32,21 @@
 
   // ========== INICIALIZAÇÃO ==========
   document.addEventListener('DOMContentLoaded', function() {
-    // Botão fixo de exportar leads
+    // BOTÃO FIXO DE EXPORTAR LEADS — VISÍVEL!
     var exp = document.createElement('button');
-    exp.textContent = '⬇ Leads';
-    exp.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:99999;padding:8px 12px;font-size:13px;border:none;border-radius:8px;background:rgba(20,38,89,.85);color:#fff;opacity:.5';
+    exp.textContent = '⬇ Exportar Leads';
+    exp.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99999;padding:14px 20px;font-size:14px;font-weight:600;border:none;border-radius:50px;background:linear-gradient(135deg,#00E5D0,#5B7FFF);color:#fff;box-shadow:0 4px 20px rgba(0,229,208,0.4);cursor:pointer;transition:transform 0.15s;';
+    exp.addEventListener('mouseenter', function(){ this.style.transform='scale(1.05); });
+    exp.addEventListener('mouseleave', function(){ this.style.transform='scale(1); });
     exp.addEventListener('click', function(){ window.FEIRA.exportLeads(); });
     document.body.appendChild(exp);
+
+    // Botão "Sair" para fechar e exportar
+    var exitBtn = document.createElement('button');
+    exitBtn.textContent = '🔄 Próximo Investidor';
+    exitBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:99999;padding:14px 20px;font-size:14px;font-weight:600;border:none;border-radius:50px;background:rgba(255,255,255,0.12);color:#fff;border:2px solid rgba(255,255,255,0.2);cursor:pointer;';
+    exitBtn.addEventListener('click', proximoInvestidor);
+    document.body.appendChild(exitBtn);
 
     // Desativar live-pulse
     if (window.AvendLivePulse && window.AvendLivePulse.pause) {
@@ -54,11 +63,16 @@
     if (splash) splash.style.display = 'none';
     document.body.style.overflow = '';
 
-    // Verificar consultor salvo neste turno
+    // Verificar consultor salvo neste turno (com timeout de inatividade)
     try {
       var saved = sessionStorage.getItem('feira-consultor');
-      if (saved) {
+      var lastActive = parseInt(sessionStorage.getItem('feira-last-active') || '0');
+      var now = Date.now();
+      var maxIdleMs = 5 * 60 * 1000; // 5 minutos
+
+      if (saved && (now - lastActive < maxIdleMs)) {
         consultorAtivo = JSON.parse(saved);
+        sessionStorage.setItem('feira-last-active', now.toString());
         injectOverlay();
         showApresentacao();
         return;
@@ -123,6 +137,10 @@
 
   // ========== TELA 1: CONSULTOR ==========
   function showConsultor() {
+    // Limpa consultor anterior e atualiza timestamp
+    sessionStorage.removeItem('feira-consultor');
+    sessionStorage.setItem('feira-last-active', Date.now().toString());
+
     var overlay = getOverlay();
     var btns = CONFIG.consultores.map(function(c) {
       return '<button class="feira-consultor-btn" data-id="' + c.id + '" data-nome="' + c.nome + '">' + c.nome + '</button>';
@@ -269,7 +287,7 @@
     track.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
     track.addEventListener('touchend', function(e) {
       var diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) {
+      if (Math.abs(diff) > 80) {
         goSlide(currentSlide + (diff > 0 ? 1 : -1));
       }
     }, { passive: true });
@@ -362,7 +380,7 @@
 
         '<!-- Termômetro de qualificação -->' +
         '<div class="feira-termometro">' +
-          '<label class="feira-termo-label">Qualificação do Lead</label>' +
+          '<label class="feira-termo-label">Qualificação do Lead <span class="help-icon" title="Frio: não qualified | Morno: interessado | Quente: pronto para comprar">?</span></label>' +
           '<div class="feira-termo-wrap">' +
             '<input type="range" id="lead-temp" min="1" max="4" value="2" step="1" class="feira-termo-slider" />' +
             '<div class="feira-termo-labels">' +
@@ -377,7 +395,8 @@
 
         '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;opacity:.8;margin:8px 0;">' +
           '<input type="checkbox" id="lead-consent" required style="margin-top:2px;" />' +
-          '<span>Autorizo a AVEND a entrar em contato sobre a franquia e a tratar meus dados conforme a LGPD.</span>' +
+          '<span>Autorizo a AVEND a entrar em contato sobre a franquia e a tratar meus dados conforme a ' +
+          '<a href="privacidade.html" target="_blank" style="color:#00E5D0;text-decoration:underline;">Política de Privacidade e LGPD</a>.</span>' +
         '</label>' +
         '<button type="submit" class="feira-btn-primary feira-btn-submit">Salvar Lead ✓</button>' +
         '<button type="button" class="feira-btn-voltar" id="feira-voltar-lead">← Voltar</button>' +
@@ -419,8 +438,16 @@
     // Submit
     document.getElementById('feira-lead-form').addEventListener('submit', function(e) {
       e.preventDefault();
+      // ← NOVO — botão de loading
+      var submitBtn = document.querySelector('.feira-btn-submit');
+      var originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Enviando…';
+      submitBtn.disabled = true;
+
       if (!document.getElementById('lead-consent').checked) {
         alert('É necessário autorizar o contato para cadastrar.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
         return;
       }
       var nome = document.getElementById('lead-nome').value.trim();
@@ -432,6 +459,8 @@
       if (!nome || !telefone) {
         if (!nome) document.getElementById('lead-nome').focus();
         else document.getElementById('lead-telefone').focus();
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
         return;
       }
 
@@ -440,6 +469,8 @@
       if (telLimpo.length < 10 || telLimpo.length > 13) {
         alert('Telefone inválido. Use formato: (11) 99999-9999');
         document.getElementById('lead-telefone').focus();
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
         return;
       }
 
@@ -456,6 +487,13 @@
       };
 
       enviarLead(leadData);
+
+      // Timeout de 3 segundos pra feedback, independente de sucesso/falha
+      setTimeout(function() {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }, 3000);
+
       showEncerramento(leadData);
     });
   }
@@ -602,10 +640,31 @@
   }
   window.addEventListener('online', flushPendentes);
 
+  // Alerta antes de fechar página
+  window.addEventListener('beforeunload', function() {
+    try {
+      var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
+      var pendentes = leads.filter(function(l){ return !l._enviado; }).length;
+      if (pendentes > 0) {
+        return 'Você tem ' + pendentes + ' lead(s) não exportados. Fechar mesmo assim?';
+      }
+    } catch(e) {}
+  });
+
   function proximoInvestidor() {
     if (timerInterval) clearInterval(timerInterval);
     atendimentoStart = null;
     document.querySelectorAll('.feira-btn-float').forEach(function(el) { el.remove(); });
+
+    // ← Checar leads pendentes antes de sair
+    try {
+      var leads = JSON.parse(localStorage.getItem('feira-leads') || '[]');
+      var pendentes = leads.filter(function(l){ return !l._enviado; }).length;
+      if (pendentes > 0 && confirm('Atenção: ' + pendentes + ' lead(s) não foram enviados para a planilha. Exportar agora?')) {
+        window.FEIRA.exportLeads();
+      }
+    } catch(e) {}
+
     showVitrine();
   }
 

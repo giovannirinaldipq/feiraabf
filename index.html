@@ -88,8 +88,24 @@
   <meta name="theme-color" content="#0d0e36" />
   <meta name="keywords" content="franquia vending machines, AVEND, simulador franquia, microfranquia, varejo automatizado, investimento renda passiva, BOM FRANQUEADO" />
 
-  <link rel="canonical" href="https://giovannirinaldipq.github.io/feiraabf/" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <!-- Fontes locais vendored para funcionar offline na feira -->
+  <!-- Fallback: Clash Display → Satoshi → Inter → system-ui -->
+  <style>
+    @font-face {
+      font-family: 'Clash Display';
+      src: url('assets/fonts/clash-display-v7-normal.woff2') format('woff2');
+      font-weight: 200 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Satoshi';
+      src: url('assets/fonts/satoshi-v4-normal.woff2') format('woff2');
+      font-weight: 300 900;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
 
   <!-- Open Graph (WhatsApp, LinkedIn, Facebook) -->
   <meta property="og:type" content="website" />
@@ -117,9 +133,8 @@
   <link rel="icon" type="image/png" href="assets/icone-avend.png" />
   <link rel="apple-touch-icon" href="assets/icone-avend.png" />
 
-  <!-- Premium Fonts: Clash Display (display) + Satoshi (body) -->
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="https://giovannirinaldipq.github.io/feiraabf/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
 
   <link rel="stylesheet" href="styles.css?v=37" />
   <link rel="stylesheet" href="feira-mode.css?v=2" />
