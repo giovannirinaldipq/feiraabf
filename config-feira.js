@@ -72,7 +72,7 @@
 
       if (saved && (now - lastActive < maxIdleMs)) {
         consultorAtivo = JSON.parse(saved);
-        sessionStorage.setItem('fea-last-active', now.toString());
+        sessionStorage.setItem('feira-last-active', now.toString());
         injectOverlay();
         showApresentacao();
         return;
